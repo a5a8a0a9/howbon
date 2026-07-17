@@ -29,6 +29,10 @@ npm run build
 
 正式版輸出位於 `dist/howbon/browser`，部署時需使用 HTTPS 並將未知路徑回退至 `index.html`。
 
+## 發布
+
+推送至 `main` 後，GitHub Actions 會執行測試、建立正式版 PWA，並部署至 GitHub Pages。正式網域為 `https://howbon.young-app.com`。
+
 ## 資料與隱私
 
 進度只保存在使用者目前瀏覽器的 `localStorage`，不會傳送到伺服器，也不支援跨裝置同步。
