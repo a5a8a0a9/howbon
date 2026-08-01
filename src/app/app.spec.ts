@@ -1,63 +1,59 @@
+import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { SwUpdate } from '@angular/service-worker';
 import { EMPTY } from 'rxjs';
+import { describe, expect, it, vi } from 'vitest';
 import { App } from './app';
+import { AuthService } from './auth.service';
 
-class MemoryStorage implements Storage {
-  private readonly values = new Map<string, string>();
-  get length(): number { return this.values.size; }
-  clear(): void { this.values.clear(); }
-  getItem(key: string): string | null { return this.values.get(key) ?? null; }
-  key(index: number): string | null { return [...this.values.keys()][index] ?? null; }
-  removeItem(key: string): void { this.values.delete(key); }
-  setItem(key: string, value: string): void { this.values.set(key, value); }
+function swUpdateStub() {
+  return {
+    isEnabled: false,
+    versionUpdates: EMPTY,
+    activateUpdate: () => Promise.resolve(true),
+  };
 }
 
 describe('App', () => {
-  beforeEach(async () => {
-    Object.defineProperty(globalThis, 'localStorage', {
-      configurable: true,
-      value: new MemoryStorage(),
-    });
-    Object.defineProperty(window, 'matchMedia', {
-      configurable: true,
-      value: () => ({ matches: false, addEventListener: () => undefined, removeEventListener: () => undefined }),
-    });
-    localStorage.clear();
+  it('renders the login gate while signed out', async () => {
+    await TestBed.configureTestingModule({
+      imports: [App],
+      providers: [{ provide: SwUpdate, useValue: swUpdateStub() }],
+    }).compileComponents();
+
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+    const compiled = fixture.nativeElement as HTMLElement;
+
+    expect(compiled.querySelector('h1')?.textContent).toContain('今天也要');
+    expect(compiled.querySelector('.stamp-button')).toBeNull();
+    expect(compiled.textContent).toContain('還差一小步');
+  });
+
+  it('renders the cloud dashboard for a signed-in user', async () => {
+    const authStub = {
+      configured: true,
+      authReady: signal(true),
+      isSigningIn: signal(false),
+      error: signal<string | null>(null),
+      user: signal({ uid: 'alice', displayName: '小明', photoURL: null }),
+      signInWithGoogle: vi.fn(),
+      signOut: vi.fn(),
+    };
     await TestBed.configureTestingModule({
       imports: [App],
       providers: [
-        {
-          provide: SwUpdate,
-          useValue: {
-            isEnabled: false,
-            versionUpdates: EMPTY,
-            activateUpdate: () => Promise.resolve(true),
-          },
-        },
+        { provide: SwUpdate, useValue: swUpdateStub() },
+        { provide: AuthService, useValue: authStub },
       ],
     }).compileComponents();
-  });
 
-  it('creates the app and renders the product heading', async () => {
     const fixture = TestBed.createComponent(App);
-    await fixture.whenStable();
+    fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
 
-    expect(fixture.componentInstance).toBeTruthy();
-    expect(compiled.querySelector('h1')?.textContent).toContain('今天也要');
-    expect(compiled.querySelector('.round-count')?.textContent).toContain('0/ 5');
-  });
-
-  it('adds a stamp when the primary button is clicked', async () => {
-    const fixture = TestBed.createComponent(App);
-    fixture.detectChanges();
-
-    const button = fixture.nativeElement.querySelector('.stamp-button') as HTMLButtonElement;
-    button.click();
-    fixture.detectChanges();
-
-    expect(button.disabled).toBe(true);
-    expect((fixture.nativeElement as HTMLElement).querySelectorAll('.stamp-slot.is-filled')).toHaveLength(1);
+    expect(compiled.querySelector('.account-chip')?.textContent).toContain('小明');
+    expect(compiled.querySelector('.stamp-button')).toBeTruthy();
+    expect(compiled.textContent).toContain('獎賞願望清單');
   });
 });

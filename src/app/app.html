@@ -1,179 +1,82 @@
-<main class="page-shell">
+<div class="app-shell">
   <div class="paper-noise" aria-hidden="true"></div>
-
   <header class="site-header">
-    <a class="brand" href="#top" aria-label="好棒棒集章首頁">
-      <span class="brand-mark" aria-hidden="true">棒</span>
-      <span>好棒棒集章</span>
-    </a>
-    @if (!isInstalled() && (installPrompt() || isIos)) {
-      <button class="install-button" type="button" (click)="installApp()">
-        <span aria-hidden="true">＋</span> 安裝到主畫面
-      </button>
-    }
+    <a class="brand" href="#top" aria-label="好棒棒集章首頁"
+      ><span class="brand-mark" aria-hidden="true">棒</span><span>好棒棒集章</span></a
+    >
+    <div class="header-actions">
+      @if (!isInstalled() && (installPrompt() || isIos)) {
+        <button class="ghost-button" type="button" (click)="installApp()">
+          <span class="material-symbols-rounded" aria-hidden="true">install_mobile</span> 安裝 App
+        </button>
+      }
+      @if (auth.user()) {
+        <div class="account-chip">
+          @if (auth.user()!.photoURL) {
+            <img [src]="auth.user()!.photoURL!" alt="" referrerpolicy="no-referrer" />
+          } @else {
+            <span class="material-symbols-rounded" aria-hidden="true">person</span>
+          }
+          <span>{{ auth.user()!.displayName }}</span>
+        </div>
+        <button class="logout-button" type="button" (click)="auth.signOut()">
+          <span class="material-symbols-rounded" aria-hidden="true">logout</span
+          ><span class="logout-label">登出</span>
+        </button>
+      }
+    </div>
   </header>
 
-  <section class="hero" id="top" aria-labelledby="page-title">
-    <div class="hero-copy">
-      <p class="eyebrow"><span></span> 日日都值得被肯定</p>
-      <h1 id="page-title">今天也要<br /><em>好棒棒！</em></h1>
-      <p class="intro">每完成一件值得開心的小事，就替自己蓋一個章。集滿五個，收下一枚專屬徽章。</p>
-      <div class="tiny-note" aria-hidden="true">
-        <span class="note-arrow">↗</span>
-        <span>慢慢來，也很厲害</span>
-      </div>
-    </div>
-
-    <section class="stamp-card" aria-labelledby="card-title">
-      <span class="tape tape-left" aria-hidden="true"></span>
-      <span class="tape tape-right" aria-hidden="true"></span>
-
-      <div class="card-heading">
-        <div>
-          <p class="card-kicker">MY HOW BON CARD</p>
-          <h2 id="card-title">我的好棒卡</h2>
-        </div>
-        <div class="round-count" aria-label="目前集章進度">
-          <strong>{{ displayStampCount() }}</strong
-          ><span>/ 5</span>
-        </div>
-      </div>
-
-      <div class="stamp-grid" role="img" [attr.aria-label]="progressLabel()">
-        @for (slot of stampSlots; track slot) {
-          <div
-            class="stamp-slot"
-            [class.is-filled]="slot < displayStampCount()"
-            [class.just-stamped]="slot === lastStampedIndex()"
-            aria-hidden="true"
-          >
-            @if (slot < displayStampCount()) {
-              <div class="stamp-ink">
-                <span class="stamp-star">★</span>
-                <span class="stamp-text">好棒</span>
-              </div>
-            } @else {
-              <span class="slot-number">0{{ slot + 1 }}</span>
-            }
-          </div>
-        }
-      </div>
-
-      <div class="card-progress-copy" aria-live="polite">
-        @if (displayStampCount() === 0) {
-          <span>從第一個好棒開始吧</span>
-        } @else if (displayStampCount() === 5) {
-          <span>集滿了！徽章正在飛來</span>
-        } @else {
-          <span>再 {{ 5 - displayStampCount() }} 個就能解鎖徽章</span>
-        }
-        <span class="scribble" aria-hidden="true"></span>
-      </div>
-
-      <button class="stamp-button" type="button" [disabled]="isStamping()" (click)="addStamp()">
-        <span class="button-star" aria-hidden="true">✦</span>
-        <span>{{ isStamping() ? '蓋章中…' : '蓋一個好棒章' }}</span>
-        <span class="button-arrow" aria-hidden="true">→</span>
-      </button>
-      <p class="button-hint">做得好，就值得留下一個記號。</p>
-    </section>
-  </section>
-
-  <section class="collection" aria-labelledby="collection-title">
-    <div class="collection-copy">
-      <p class="section-kicker">HOW BON COLLECTION</p>
-      <h2 id="collection-title">我的好棒收藏</h2>
-      <p>每五個印章，就會變成一枚記得住的成就。</p>
-    </div>
-
-    <div class="badge-showcase">
-      <div class="badge-art" [class.is-empty]="progress.badgeCount() === 0" aria-hidden="true">
-        <span class="badge-rays"></span>
-        <span class="badge-inner"><b>好棒</b><small>GOOD JOB!</small></span>
-        <span class="ribbon ribbon-left"></span>
-        <span class="ribbon ribbon-right"></span>
-      </div>
-      <div class="badge-copy" aria-live="polite">
-        <span>已收藏</span>
-        <strong>{{ progress.badgeCount() }} <small>枚</small></strong>
-        @if (progress.badgeCount() === 0) {
-          <p>第一枚徽章正在等你</p>
-        } @else {
-          <p>努力過的人都是戰士</p>
-        }
-      </div>
-    </div>
-  </section>
-
-  <footer class="site-footer">
-    <div>
-      <span class="footer-mark" aria-hidden="true">棒</span>
-      <p><strong>好棒棒集章</strong><br />把小小的進步，好好收藏起來。</p>
-    </div>
-    <button class="reset-button" type="button" (click)="openResetConfirm()">重設我的紀錄</button>
-  </footer>
-</main>
-
-@if (showCelebration()) {
-  <div class="modal-backdrop celebration-backdrop" role="presentation">
-    @for (piece of confettiPieces; track $index) {
-      <span class="confetti" aria-hidden="true"></span>
+  @if (!auth.authReady()) {
+    <main class="loading-shell" aria-live="polite">
+      <div class="loading-mark">棒</div>
+      <p>正在打開你的集章簿…</p>
+    </main>
+  } @else if (!auth.user()) {
+    <app-login />
+  } @else {
+    @if (!connectivity.online()) {
+      <aside class="offline-banner" role="status">
+        <span class="material-symbols-rounded" aria-hidden="true">cloud_off</span
+        >目前離線：可以查看最近資料，連線後才能蓋章、編輯或兌換。
+      </aside>
     }
-    <section
-      class="modal celebration-modal"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="celebration-title"
-    >
-      <p class="modal-kicker">NEW BADGE!</p>
-      <div class="mini-badge" aria-hidden="true">★</div>
-      <h2 id="celebration-title">你真的好棒！</h2>
-      <p>五個印章集滿了，第 {{ progress.badgeCount() }} 枚徽章已經放進收藏。</p>
-      <button #celebrationClose class="modal-primary" type="button" (click)="closeCelebration()">
-        收下這份肯定
-      </button>
-    </section>
-  </div>
-}
-
-@if (showResetConfirm()) {
-  <div class="modal-backdrop" role="presentation">
-    <section
-      class="modal"
-      role="alertdialog"
-      aria-modal="true"
-      aria-labelledby="reset-title"
-      aria-describedby="reset-description"
-    >
-      <p class="modal-kicker">RESET</p>
-      <h2 id="reset-title">要重新開始嗎？</h2>
-      <p id="reset-description">目前的印章和徽章都會被清除，而且無法復原。</p>
-      <div class="modal-actions">
-        <button #resetCancel class="modal-secondary" type="button" (click)="cancelReset()">
-          先不要
-        </button>
-        <button class="modal-danger" type="button" (click)="confirmReset()">清除紀錄</button>
-      </div>
-    </section>
-  </div>
-}
+    <main id="top" class="dashboard">
+      <section class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow"><span></span> 把今天的小進步收好</p>
+          <h1>今天也要<br /><em>好棒棒</em></h1>
+          <p>
+            替完成的小事蓋一個章，寫下值得記住的心情。集滿五枚章，就帶走一枚徽章和一張獎賞票券。
+          </p>
+        </div>
+        <app-stamp-card />
+      </section>
+      <app-stamp-journal />
+      <app-rewards />
+    </main>
+    <footer class="site-footer">
+      <span class="brand-mark" aria-hidden="true">棒</span>
+      <p><strong>好棒棒集章</strong><br />每一次微小進步，都值得被好好收藏。</p>
+    </footer>
+  }
+</div>
 
 @if (showInstallHelp()) {
-  <div class="modal-backdrop" role="presentation">
-    <section class="modal" role="dialog" aria-modal="true" aria-labelledby="install-title">
-      <p class="modal-kicker">INSTALL APP</p>
-      <h2 id="install-title">加到 iPhone 主畫面</h2>
-      <p>點 Safari 下方的「分享」，再選擇「加入主畫面」，就能像 App 一樣使用。</p>
-      <button class="modal-primary" type="button" (click)="showInstallHelp.set(false)">
-        知道了
-      </button>
+  <div class="global-modal-backdrop">
+    <section class="global-modal" role="dialog" aria-modal="true" aria-labelledby="install-title">
+      <h2 id="install-title">安裝到 iPhone</h2>
+      <p>在 Safari 點選分享，再選擇「加入主畫面」，就能像 App 一樣開啟。</p>
+      <button type="button" (click)="showInstallHelp.set(false)">知道了</button>
     </section>
   </div>
 }
 
 @if (updateReady()) {
   <aside class="update-toast" aria-live="polite">
-    <span><strong>新版準備好了</strong><small>重新整理就能使用</small></span>
-    <button type="button" (click)="reloadForUpdate()">立即更新</button>
+    <span><strong>有新的好棒版本</strong><small>重新整理即可更新</small></span
+    ><button type="button" (click)="reloadForUpdate()">
+      <span class="material-symbols-rounded" aria-hidden="true">refresh</span> 更新
+    </button>
   </aside>
 }

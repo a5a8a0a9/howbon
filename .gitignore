@@ -9,6 +9,8 @@
 # Node
 /node_modules
 npm-debug.log
+firestore-debug.log
+firebase-debug.log
 yarn-error.log
 
 # IDEs and editors
