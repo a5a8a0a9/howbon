@@ -1,11 +1,12 @@
 export const environment = {
   production: false,
   firebase: {
-    apiKey: 'REPLACE_WITH_FIREBASE_API_KEY',
-    authDomain: 'REPLACE_WITH_PROJECT_ID.firebaseapp.com',
-    projectId: 'REPLACE_WITH_PROJECT_ID',
-    storageBucket: 'REPLACE_WITH_PROJECT_ID.firebasestorage.app',
-    messagingSenderId: 'REPLACE_WITH_MESSAGING_SENDER_ID',
-    appId: 'REPLACE_WITH_FIREBASE_APP_ID',
+    apiKey: 'AIzaSyDSEYjmKgJ7P9NM1Kp2qmEZavvMBQiEfOg',
+    authDomain: 'howbon-b35d4.firebaseapp.com',
+    projectId: 'howbon-b35d4',
+    storageBucket: 'howbon-b35d4.firebasestorage.app',
+    messagingSenderId: '344127362836',
+    appId: '1:344127362836:web:221d0999364c24e38a1401',
+    measurementId: 'G-JQ373TYNR9',
   },
 };
