@@ -16,6 +16,10 @@ import { getFirebaseServices } from '../../../core/firebase/firebase-services';
 import { LoadingService } from '../../../core/loading/loading.service';
 import { MAX_STORE_ITEM_NAME_LENGTH, StoreItem, toDate } from '../../../shared/models/models';
 
+export function prependStoreItemIfMissing(items: StoreItem[], item: StoreItem): StoreItem[] {
+  return items.some((current) => current.id === item.id) ? items : [item, ...items];
+}
+
 @Injectable({ providedIn: 'root' })
 export class StoreService {
   private readonly services = getFirebaseServices();
@@ -73,12 +77,26 @@ export class StoreService {
   async createItem(name: string): Promise<void> {
     const user = this.requireWritableUser();
     const cleanName = this.validateName(name);
-    await this.globalLoading.run('正在新增商品…', () =>
+    const itemRef = await this.globalLoading.run('正在新增商品…', () =>
       addDoc(collection(this.services!.firestore, 'users', user.uid, 'storeItems'), {
         name: cleanName,
         price: 1,
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
+      }),
+    );
+
+    // Firestore remains authoritative, but its snapshot callback can arrive after the
+    // write promise resolves. Show the successful write immediately without duplicating
+    // a document that the listener has already delivered.
+    const now = new Date();
+    this.itemState.update((items) =>
+      prependStoreItemIfMissing(items, {
+        id: itemRef.id,
+        name: cleanName,
+        price: 1,
+        createdAt: now,
+        updatedAt: now,
       }),
     );
   }
