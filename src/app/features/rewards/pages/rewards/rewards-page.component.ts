@@ -3,6 +3,7 @@ import { Component, inject } from '@angular/core';
 import { EmptyStateComponent } from '../../../../shared/ui/empty-state/empty-state.component';
 import { PageHeaderComponent } from '../../../../shared/ui/page-header/page-header.component';
 import { TicketBalanceComponent } from '../../../../shared/ui/ticket-balance/ticket-balance.component';
+import { PurchaseService } from '../../data-access/purchase.service';
 import { TicketService } from '../../data-access/ticket.service';
 
 @Component({
@@ -12,5 +13,6 @@ import { TicketService } from '../../data-access/ticket.service';
   styleUrl: './rewards-page.component.scss',
 })
 export default class RewardsPageComponent {
+  protected readonly purchases = inject(PurchaseService);
   protected readonly tickets = inject(TicketService);
 }

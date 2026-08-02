@@ -1,1 +1,160 @@
-<app-rewards />
+<section class="store-page" aria-labelledby="store-title">
+  <app-page-header
+    eyebrow="TICKET STORE"
+    title="商店"
+    titleId="store-title"
+    description="把想送給自己的獎賞放進商店，得到票券後就能來購買。"
+  />
+
+  <div class="balance-row">
+    <app-ticket-balance [count]="tickets.availableCount()" />
+    <span>票券就像你的獎賞金幣</span>
+  </div>
+
+  <section class="store-panel" aria-labelledby="items-title">
+    <div class="panel-heading">
+      <div>
+        <p>MY STORE</p>
+        <h2 id="items-title">商品列表</h2>
+      </div>
+      <span>{{ store.items().length }} 項</span>
+    </div>
+
+    <form class="item-form" (ngSubmit)="createItem()">
+      <label class="sr-only" for="new-item">新增商品</label>
+      <input
+        id="new-item"
+        name="newItem"
+        [(ngModel)]="newItemName"
+        [maxLength]="maxNameLength"
+        [disabled]="!connectivity.online() || busy()"
+        placeholder="例如：看一場期待已久的電影"
+      />
+      <button
+        class="add-button"
+        type="submit"
+        [disabled]="!connectivity.online() || busy() || !newItemName.trim()"
+        aria-label="新增商品"
+      >
+        <span class="material-symbols-rounded" aria-hidden="true">add</span>
+      </button>
+    </form>
+
+    @if (formError() && !editingItem() && !deletingItem() && !purchasingItem()) {
+      <p class="form-error" role="alert">{{ formError() }}</p>
+    }
+
+    @if (store.loading()) {
+      <p class="section-loading" role="status">正在整理商店商品…</p>
+    } @else if (store.items().length === 0) {
+      <app-empty-state
+        icon="storefront"
+        title="商店還是空的"
+        description="先新增一個讓自己期待的獎賞吧。"
+      />
+    } @else {
+      <div class="item-grid">
+        @for (item of store.items(); track item.id) {
+          <article class="item-card">
+            <div class="item-icon" aria-hidden="true">
+              <span class="material-symbols-rounded">featured_seasonal_and_gifts</span>
+            </div>
+            <h3>{{ item.name }}</h3>
+            <div class="item-actions">
+              <button
+                class="icon-button"
+                type="button"
+                [disabled]="!connectivity.online()"
+                [attr.aria-label]="'編輯 ' + item.name"
+                (click)="openEdit(item)"
+              >
+                <span class="material-symbols-rounded" aria-hidden="true">edit</span>
+              </button>
+              <button
+                class="icon-button"
+                type="button"
+                [disabled]="!connectivity.online()"
+                [attr.aria-label]="'刪除 ' + item.name"
+                (click)="openDelete(item)"
+              >
+                <span class="material-symbols-rounded" aria-hidden="true">delete</span>
+              </button>
+            </div>
+            <button
+              class="primary purchase-button"
+              type="button"
+              [disabled]="!connectivity.online() || tickets.availableCount() === 0"
+              (click)="openPurchase(item)"
+            >
+              <span class="material-symbols-rounded" aria-hidden="true">shopping_bag</span>
+              {{ tickets.availableCount() === 0 ? '票券不足' : '購買' }}
+            </button>
+          </article>
+        }
+      </div>
+    }
+  </section>
+</section>
+
+@if (editingItem()) {
+  <app-dialog title="修改商品" titleId="edit-item-title" (dismissed)="closeDialogs()">
+    <input [(ngModel)]="editItemName" [maxLength]="maxNameLength" />
+    @if (formError()) {
+      <p class="form-error" role="alert">{{ formError() }}</p>
+    }
+    <div class="dialog-actions">
+      <button class="secondary" type="button" (click)="closeDialogs()">取消</button>
+      <button
+        class="primary"
+        type="button"
+        [disabled]="busy() || !editItemName.trim()"
+        (click)="saveItem()"
+      >
+        儲存
+      </button>
+    </div>
+  </app-dialog>
+}
+
+@if (deletingItem()) {
+  <app-dialog
+    [title]="'刪除「' + deletingItem()!.name + '」？'"
+    titleId="delete-item-title"
+    role="alertdialog"
+    (dismissed)="closeDialogs()"
+  >
+    <p>已購買的獎賞仍會保留購買當下的名稱與數量。</p>
+    @if (formError()) {
+      <p class="form-error" role="alert">{{ formError() }}</p>
+    }
+    <div class="dialog-actions">
+      <button class="secondary" type="button" (click)="closeDialogs()">保留</button>
+      <button class="danger" type="button" [disabled]="busy()" (click)="confirmDelete()">
+        確認刪除
+      </button>
+    </div>
+  </app-dialog>
+}
+
+@if (purchasingItem()) {
+  <app-dialog
+    [title]="'購買「' + purchasingItem()!.name + '」？'"
+    titleId="purchase-item-title"
+    kicker="REWARD SHOP"
+    (dismissed)="closeDialogs()"
+  >
+    <div dialog-icon class="purchase-icon" aria-hidden="true">
+      <span class="material-symbols-rounded">shopping_bag</span>
+    </div>
+    <p>確認後會扣除票券，並把這項商品加入你的獎賞道具。</p>
+    @if (formError()) {
+      <p class="form-error" role="alert">{{ formError() }}</p>
+    }
+    <div class="dialog-actions">
+      <button class="secondary" type="button" (click)="closeDialogs()">再想一下</button>
+      <button class="primary" type="button" [disabled]="busy()" (click)="confirmPurchase()">
+        確認購買
+      </button>
+    </div>
+  </app-dialog>
+}

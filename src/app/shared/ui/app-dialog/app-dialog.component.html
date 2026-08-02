@@ -1,6 +1,8 @@
 <div class="dialog-backdrop" (click)="dismissFromBackdrop($event)">
   <section
+    #dialogCard
     class="dialog-card"
+    tabindex="-1"
     [attr.role]="role()"
     aria-modal="true"
     [attr.aria-labelledby]="titleId()"

@@ -1,6 +1,6 @@
 # 好棒棒集章
 
-一個手機優先、可安裝的 Angular 22 PWA。使用 Google 帳號保存每一次值得肯定的小事，集滿五枚章即可解鎖徽章與獎賞票券；票券可以自由兌換，或選擇預先建立的獎賞願望。
+一個手機優先、可安裝的 Angular 22 PWA。使用 Google 帳號保存每一次值得肯定的小事，集滿五枚章即可解鎖徽章與獎賞票券；票券可在自訂商店購買獎賞道具。
 
 完整產品與資料規格請見 [`docs/cloud-account-and-rewards-spec.md`](docs/cloud-account-and-rewards-spec.md)。
 
@@ -9,8 +9,10 @@
 - Google SSO 登入與依帳號隔離的 Firestore 資料
 - 每次蓋章可留下、修改或清空選填留言
 - 每五枚章自動產生一枚徽章與一張票券
-- 可重複使用的獎賞願望清單
-- 自由兌換或指定願望的票券紀錄
+- 首頁、月份日誌、獎賞道具與商店四個 lazy-loaded 分頁
+- 可自行新增、改名與刪除商品的票券商店
+- 票券購買 transaction 與依商品合併數量的獎賞道具庫存
+- 全域 Loading mask 與離線唯讀保護
 - Firestore persistent cache 與離線唯讀狀態
 - 自行託管的 Material Symbols Rounded icon font
 - PWA 安裝與版本更新提示
@@ -65,8 +67,8 @@ npm run test:rules
 npm run build -- --configuration production
 ```
 
-- Angular 測試涵蓋登入門檻、蓋章留言、第五章獎勵與願望／票券 UI。
-- Rules 測試涵蓋未登入拒絕、帳號隔離、願望驗證與票券單向兌換。
+- Angular 測試涵蓋登入門檻、路由、Loading、蓋章留言、月份邊界與道具庫存合併。
+- Rules 測試涵蓋未登入拒絕、帳號隔離、商品價格、購買交易、票券競爭與 purchase 不可變性。
 - 正式輸出位於 `dist/howbon/browser`。
 
 ## 發布

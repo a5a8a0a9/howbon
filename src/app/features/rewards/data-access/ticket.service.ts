@@ -1,23 +1,12 @@
-import { Injectable, computed, effect, inject, signal } from '@angular/core';
-import {
-  collection,
-  doc,
-  onSnapshot,
-  orderBy,
-  query,
-  runTransaction,
-  serverTimestamp,
-} from 'firebase/firestore';
+import { Injectable, computed, effect, signal } from '@angular/core';
+import { collection, onSnapshot, orderBy, query } from 'firebase/firestore';
 import { AuthService } from '../../../core/auth/auth.service';
-import { ConnectivityService } from '../../../core/connectivity/connectivity.service';
 import { getFirebaseServices } from '../../../core/firebase/firebase-services';
-import { LoadingService } from '../../../core/loading/loading.service';
-import { RewardTicket, RewardWish, toDate } from '../../../shared/models/models';
+import { RewardTicket, toDate } from '../../../shared/models/models';
 
 @Injectable({ providedIn: 'root' })
 export class TicketService {
   private readonly services = getFirebaseServices();
-  private readonly globalLoading = inject(LoadingService);
   private readonly ticketState = signal<RewardTicket[]>([]);
 
   readonly tickets = this.ticketState.asReadonly();
@@ -25,16 +14,10 @@ export class TicketService {
     this.ticketState().filter((ticket) => ticket.status === 'available'),
   );
   readonly availableCount = computed(() => this.availableTickets().length);
-  readonly redeemedTickets = computed(() =>
-    this.ticketState().filter((ticket) => ticket.status === 'redeemed'),
-  );
   readonly loading = signal(false);
   readonly error = signal<string | null>(null);
 
-  constructor(
-    private readonly auth: AuthService,
-    private readonly connectivity: ConnectivityService,
-  ) {
+  constructor(private readonly auth: AuthService) {
     effect((onCleanup) => {
       const user = this.auth.user();
       this.ticketState.set([]);
@@ -76,47 +59,5 @@ export class TicketService {
       );
       onCleanup(unsubscribe);
     });
-  }
-
-  async redeemTicket(ticketId: string, wish?: Pick<RewardWish, 'id'>): Promise<void> {
-    const user = this.auth.user();
-    if (!user || !this.services) {
-      throw new Error('請先登入並完成 Firebase 設定。');
-    }
-    if (!this.connectivity.online()) {
-      throw new Error('目前離線，連線後才能兌換票券。');
-    }
-
-    await this.globalLoading.run('正在兌換票券…', () =>
-      runTransaction(this.services!.firestore, async (transaction) => {
-        const ticketRef = doc(this.services!.firestore, 'users', user.uid, 'tickets', ticketId);
-        const ticketSnapshot = await transaction.get(ticketRef);
-        if (!ticketSnapshot.exists()) {
-          throw new Error('找不到這張票券，請重新整理。');
-        }
-        if (ticketSnapshot.data()['status'] !== 'available') {
-          throw new Error('這張票券已經兌換過了。');
-        }
-
-        let wishId: string | null = null;
-        let rewardNameSnapshot: string | null = null;
-        if (wish) {
-          const wishRef = doc(this.services!.firestore, 'users', user.uid, 'wishes', wish.id);
-          const wishSnapshot = await transaction.get(wishRef);
-          if (!wishSnapshot.exists()) {
-            throw new Error('選擇的願望已不存在，請重新選擇或自由兌換。');
-          }
-          wishId = wish.id;
-          rewardNameSnapshot = String(wishSnapshot.data()['name']);
-        }
-
-        transaction.update(ticketRef, {
-          status: 'redeemed',
-          wishId,
-          rewardNameSnapshot,
-          redeemedAt: serverTimestamp(),
-        });
-      }),
-    );
   }
 }
