@@ -15,7 +15,6 @@
     @if (auth.configured) {
       <p class="card-kicker">WELCOME BACK</p>
       <h2 id="account-title">登入你的集章簿</h2>
-      <p>使用 Google 帳號安全保存進度，換一台裝置也能接著收藏。</p>
       <button
         class="google-button"
         type="button"
@@ -28,14 +27,9 @@
     } @else {
       <p class="card-kicker">SETUP REQUIRED</p>
       <h2 id="account-title">還差一小步</h2>
-      <p>請先將 Firebase Web App 設定填入 <code>src/environments/environment.ts</code>。</p>
-      <div class="setup-note">
-        啟用 Google Authentication、建立 Firestore，完成後重新啟動開發伺服器。
-      </div>
     }
     @if (auth.error()) {
       <p class="error-message" role="alert">{{ auth.error() }}</p>
     }
-    <small>登入代表資料會依你的 Firebase 帳號儲存；不會搬移舊的瀏覽器集章資料。</small>
   </section>
 </main>
