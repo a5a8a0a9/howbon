@@ -1,8 +1,8 @@
 import { Injectable, computed, effect, signal } from '@angular/core';
 import { collection, onSnapshot, orderBy, query } from 'firebase/firestore';
-import { AuthService } from '../../../core/auth/auth.service';
-import { getFirebaseServices } from '../../../core/firebase/firebase-services';
-import { RewardTicket, toDate } from '../../../shared/models/models';
+import { AuthService } from '@core/auth/auth.service';
+import { getFirebaseServices } from '@core/firebase/firebase-services';
+import { RewardTicket, toDate } from '@shared/models/models';
 
 @Injectable({ providedIn: 'root' })
 export class TicketService {

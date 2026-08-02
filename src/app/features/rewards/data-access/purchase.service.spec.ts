@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { PurchaseRecord } from '../../../shared/models/models';
+import { PurchaseRecord } from '@shared/models/models';
 import { mergeInventory } from './purchase.service';
 
 function purchase(

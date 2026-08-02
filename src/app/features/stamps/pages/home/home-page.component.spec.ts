@@ -1,8 +1,8 @@
 import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { describe, expect, it, vi } from 'vitest';
-import { CelebrationService } from '../../../../core/celebration/celebration.service';
-import { ConnectivityService } from '../../../../core/connectivity/connectivity.service';
+import { CelebrationService } from '@core/celebration/celebration.service';
+import { ConnectivityService } from '@core/connectivity/connectivity.service';
 import { StampService } from '../../data-access/stamp.service';
 import HomePageComponent from './home-page.component';
 

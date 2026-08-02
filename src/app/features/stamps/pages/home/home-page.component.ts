@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { CelebrationService } from '../../../../core/celebration/celebration.service';
+import { CelebrationService } from '@core/celebration/celebration.service';
 import { StampCardComponent } from '../../components/stamp-card/stamp-card.component';
 import { StampService } from '../../data-access/stamp.service';
 

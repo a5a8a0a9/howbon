@@ -1,11 +1,11 @@
 import { DatePipe } from '@angular/common';
 import { Component, HostListener, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ConnectivityService } from '../../../../core/connectivity/connectivity.service';
-import { MAX_STAMP_NOTE_LENGTH, StampRecord } from '../../../../shared/models/models';
-import { AppDialogComponent } from '../../../../shared/ui/app-dialog/app-dialog.component';
-import { EmptyStateComponent } from '../../../../shared/ui/empty-state/empty-state.component';
-import { PageHeaderComponent } from '../../../../shared/ui/page-header/page-header.component';
+import { ConnectivityService } from '@core/connectivity/connectivity.service';
+import { MAX_STAMP_NOTE_LENGTH, StampRecord } from '@shared/models/models';
+import { AppDialogComponent } from '@shared/ui/app-dialog/app-dialog.component';
+import { EmptyStateComponent } from '@shared/ui/empty-state/empty-state.component';
+import { PageHeaderComponent } from '@shared/ui/page-header/page-header.component';
 import { JournalService } from '../../data-access/journal.service';
 
 @Component({

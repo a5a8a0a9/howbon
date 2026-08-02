@@ -1,9 +1,9 @@
 import { Component, HostListener, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { CelebrationService } from '../../../../core/celebration/celebration.service';
-import { ConnectivityService } from '../../../../core/connectivity/connectivity.service';
-import { MAX_STAMP_NOTE_LENGTH, STAMPS_PER_BADGE } from '../../../../shared/models/models';
-import { AppDialogComponent } from '../../../../shared/ui/app-dialog/app-dialog.component';
+import { CelebrationService } from '@core/celebration/celebration.service';
+import { ConnectivityService } from '@core/connectivity/connectivity.service';
+import { MAX_STAMP_NOTE_LENGTH, STAMPS_PER_BADGE } from '@shared/models/models';
+import { AppDialogComponent } from '@shared/ui/app-dialog/app-dialog.component';
 import { StampService } from '../../data-access/stamp.service';
 
 @Component({

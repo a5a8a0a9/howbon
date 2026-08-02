@@ -1,7 +1,7 @@
 import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { describe, expect, it, vi } from 'vitest';
-import { ConnectivityService } from '../../../../core/connectivity/connectivity.service';
+import { ConnectivityService } from '@core/connectivity/connectivity.service';
 import { PurchaseService } from '../../data-access/purchase.service';
 import { StoreService } from '../../data-access/store.service';
 import { TicketService } from '../../data-access/ticket.service';

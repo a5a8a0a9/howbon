@@ -1,7 +1,7 @@
 import { DatePipe } from '@angular/common';
 import { Component, inject } from '@angular/core';
-import { EmptyStateComponent } from '../../../../shared/ui/empty-state/empty-state.component';
-import { PageHeaderComponent } from '../../../../shared/ui/page-header/page-header.component';
+import { EmptyStateComponent } from '@shared/ui/empty-state/empty-state.component';
+import { PageHeaderComponent } from '@shared/ui/page-header/page-header.component';
 import { PurchaseService } from '../../data-access/purchase.service';
 
 @Component({

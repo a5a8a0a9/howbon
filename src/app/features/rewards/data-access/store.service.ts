@@ -10,11 +10,11 @@ import {
   serverTimestamp,
   updateDoc,
 } from 'firebase/firestore';
-import { AuthService } from '../../../core/auth/auth.service';
-import { ConnectivityService } from '../../../core/connectivity/connectivity.service';
-import { getFirebaseServices } from '../../../core/firebase/firebase-services';
-import { LoadingService } from '../../../core/loading/loading.service';
-import { MAX_STORE_ITEM_NAME_LENGTH, StoreItem, toDate } from '../../../shared/models/models';
+import { AuthService } from '@core/auth/auth.service';
+import { ConnectivityService } from '@core/connectivity/connectivity.service';
+import { getFirebaseServices } from '@core/firebase/firebase-services';
+import { LoadingService } from '@core/loading/loading.service';
+import { MAX_STORE_ITEM_NAME_LENGTH, StoreItem, toDate } from '@shared/models/models';
 
 export function prependStoreItemIfMissing(items: StoreItem[], item: StoreItem): StoreItem[] {
   return items.some((current) => current.id === item.id) ? items : [item, ...items];

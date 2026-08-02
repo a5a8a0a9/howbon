@@ -1,16 +1,16 @@
 import { Injectable, computed, effect, inject, signal } from '@angular/core';
-import { collection, doc, onSnapshot, runTransaction, serverTimestamp } from 'firebase/firestore';
-import { AuthService } from '../../../core/auth/auth.service';
-import { ConnectivityService } from '../../../core/connectivity/connectivity.service';
-import { getFirebaseServices } from '../../../core/firebase/firebase-services';
-import { LoadingService } from '../../../core/loading/loading.service';
+import { AuthService } from '@core/auth/auth.service';
+import { ConnectivityService } from '@core/connectivity/connectivity.service';
+import { getFirebaseServices } from '@core/firebase/firebase-services';
+import { LoadingService } from '@core/loading/loading.service';
 import {
   AddStampResult,
   MAX_STAMP_NOTE_LENGTH,
   STAMPS_PER_BADGE,
   UserProgress,
   toDate,
-} from '../../../shared/models/models';
+} from '@shared/models/models';
+import { collection, doc, onSnapshot, runTransaction, serverTimestamp } from 'firebase/firestore';
 
 const EMPTY_PROGRESS: UserProgress = {
   schemaVersion: 1,

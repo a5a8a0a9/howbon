@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { LoadingService } from '../../../core/loading/loading.service';
+import { LoadingService } from '@core/loading/loading.service';
 
 @Component({
   selector: 'app-loading-mask',

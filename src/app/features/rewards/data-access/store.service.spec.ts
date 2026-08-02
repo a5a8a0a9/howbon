@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { StoreItem } from '../../../shared/models/models';
+import { StoreItem } from '@shared/models/models';
 import { prependStoreItemIfMissing } from './store.service';
 
 function item(id: string, name: string): StoreItem {
