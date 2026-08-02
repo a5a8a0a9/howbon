@@ -143,7 +143,7 @@
 - 專案採 core/shared/features 架構；stamps feature 擁有首頁與日誌，rewards feature 擁有獎賞與商店。
 - 所有 Component 使用同名 `.ts`、`.html`、`.scss`，不使用 inline template/style 或 CSS。
 - 共用 dialog、page header、empty state、loading mask、bottom nav；按鈕、表單、卡片與 icon button 樣式集中於全域 SCSS。
-- 獎賞與商店頁採單層版面，不顯示頁面描述或票券餘額卡；項目數直接顯示於 page header，列表與標題位於同一頁面層級。
+- 獎賞與商店頁比照日誌使用單一外層 card，不顯示頁面描述、票券餘額卡或列表內層容器；項目數直接顯示於 page header，列表與標題位於同一個 card 層級。
 - Bottom nav 固定底部並支援 `safe-area-inset-bottom`；內容保留足夠底部空間。
 - Material Symbols 為裝飾時設 `aria-hidden`；icon-only 按鈕具備 `aria-label`。
 - 保留 focus-visible、reduced-motion、手機優先響應式與 PWA 安裝／更新提示。
