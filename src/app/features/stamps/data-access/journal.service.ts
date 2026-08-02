@@ -94,7 +94,7 @@ export class JournalService {
           this.loading.set(false);
         },
         () => {
-          this.error.set('無法讀取這個月的集章日誌，請稍後重試。');
+          this.error.set('無法讀取這個月的好棒日誌，請稍後重試。');
           this.loading.set(false);
         },
       );

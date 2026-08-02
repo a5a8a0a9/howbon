@@ -1,7 +1,7 @@
 <section class="journal" aria-labelledby="journal-title">
   <app-page-header
     eyebrow="HOW BON JOURNAL"
-    title="集章日誌"
+    title="好棒日誌"
     titleId="journal-title"
     [meta]="journal.entries().length + ' 筆紀錄'"
   />
@@ -69,7 +69,12 @@
 
 @if (editingStamp()) {
   <app-dialog title="編輯留言" titleId="edit-note-title" (dismissed)="closeEdit()">
-    <textarea [(ngModel)]="editNote" [maxLength]="maxNoteLength" rows="5"></textarea>
+    <textarea
+      [(ngModel)]="editNote"
+      [placeholder]="'你好棒 > <'"
+      [maxLength]="maxNoteLength"
+      rows="5"
+    ></textarea>
     <small>{{ editNote.length }} / {{ maxNoteLength }}；清空後仍會保留蓋章。</small>
     @if (editError()) {
       <p class="form-error" role="alert">{{ editError() }}</p>

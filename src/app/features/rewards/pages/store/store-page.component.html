@@ -24,7 +24,7 @@
       [(ngModel)]="newItemName"
       [maxLength]="maxNameLength"
       [disabled]="!connectivity.online() || busy()"
-      placeholder="例如：看一場期待已久的電影"
+      placeholder="例如：吃好吃的點心"
     />
     <button
       class="add-button"
@@ -125,7 +125,7 @@
     <div class="dialog-actions">
       <button class="secondary" type="button" (click)="closeDialogs()">保留</button>
       <button class="danger" type="button" [disabled]="busy()" (click)="confirmDelete()">
-        確認刪除
+        刪除
       </button>
     </div>
   </app-dialog>
