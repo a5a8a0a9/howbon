@@ -1,4 +1,4 @@
-import { Injectable, computed, signal } from '@angular/core';
+import { Injectable, computed, inject, signal } from '@angular/core';
 import {
   User,
   GoogleAuthProvider,
@@ -9,10 +9,12 @@ import {
 import { doc, getDoc, serverTimestamp, setDoc } from 'firebase/firestore';
 import { AppUserProfile } from '../../shared/models/models';
 import { getFirebaseServices, isFirebaseConfigured } from '../firebase/firebase-services';
+import { LoadingService } from '../loading/loading.service';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly services = getFirebaseServices();
+  private readonly loading = inject(LoadingService);
   private readonly firebaseUser = signal<User | null>(null);
 
   readonly configured = isFirebaseConfigured();
@@ -66,7 +68,9 @@ export class AuthService {
     const provider = new GoogleAuthProvider();
     provider.setCustomParameters({ prompt: 'select_account' });
     try {
-      await signInWithPopup(this.services.auth, provider);
+      await this.loading.run('正在登入 Google 帳號…', () =>
+        signInWithPopup(this.services!.auth, provider),
+      );
     } catch (error: unknown) {
       const code = this.errorCode(error);
       this.error.set(
@@ -86,7 +90,7 @@ export class AuthService {
       return;
     }
     this.error.set(null);
-    await signOut(this.services.auth);
+    await this.loading.run('正在登出…', () => signOut(this.services!.auth));
   }
 
   clearError(): void {

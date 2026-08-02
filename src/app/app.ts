@@ -5,11 +5,13 @@ import { SwUpdate, VersionReadyEvent } from '@angular/service-worker';
 import { filter } from 'rxjs';
 import { AuthService } from './core/auth/auth.service';
 import { ConnectivityService } from './core/connectivity/connectivity.service';
+import { LoadingService } from './core/loading/loading.service';
 import { LoginComponent } from './features/auth/login/login.component';
 import { RewardsComponent } from './features/rewards/components/rewards/rewards.component';
 import { StampCardComponent } from './features/stamps/components/stamp-card/stamp-card.component';
 import { StampJournalComponent } from './features/stamps/components/stamp-journal/stamp-journal.component';
 import { AppDialogComponent } from './shared/ui/app-dialog/app-dialog.component';
+import { LoadingMaskComponent } from './shared/ui/loading-mask/loading-mask.component';
 
 interface BeforeInstallPromptEvent extends Event {
   prompt(): Promise<void>;
@@ -21,6 +23,7 @@ interface BeforeInstallPromptEvent extends Event {
   imports: [
     AppDialogComponent,
     LoginComponent,
+    LoadingMaskComponent,
     RewardsComponent,
     StampCardComponent,
     StampJournalComponent,
@@ -34,6 +37,7 @@ export class App {
   private readonly swUpdate = inject(SwUpdate);
   protected readonly auth = inject(AuthService);
   protected readonly connectivity = inject(ConnectivityService);
+  protected readonly loading = inject(LoadingService);
   protected readonly updateReady = signal(false);
   protected readonly installPrompt = signal<BeforeInstallPromptEvent | null>(null);
   protected readonly isInstalled = signal(this.isStandalone());

@@ -5,6 +5,7 @@ import { EMPTY } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 import { App } from './app';
 import { AuthService } from './core/auth/auth.service';
+import { LoadingService } from './core/loading/loading.service';
 
 function swUpdateStub() {
   return {
@@ -67,5 +68,33 @@ describe('App', () => {
     expect(compiled.querySelector('.account-chip')?.textContent).toContain('小明');
     expect(compiled.querySelector('.stamp-button')).toBeTruthy();
     expect(compiled.textContent).toContain('獎賞願望清單');
+  });
+
+  it('blocks the application while a global action is running', async () => {
+    const authStub = {
+      configured: true,
+      authReady: signal(true),
+      isSigningIn: signal(false),
+      error: signal<string | null>(null),
+      user: signal(null),
+      signInWithGoogle: vi.fn(),
+      signOut: vi.fn(),
+    };
+    await TestBed.configureTestingModule({
+      imports: [App],
+      providers: [
+        { provide: SwUpdate, useValue: swUpdateStub() },
+        { provide: AuthService, useValue: authStub },
+      ],
+    }).compileComponents();
+
+    const fixture = TestBed.createComponent(App);
+    TestBed.inject(LoadingService).begin('正在測試…');
+    fixture.detectChanges();
+    const compiled = fixture.nativeElement as HTMLElement;
+
+    expect(compiled.querySelector('.app-shell')?.hasAttribute('inert')).toBe(true);
+    expect(compiled.querySelector('.app-shell')?.getAttribute('aria-busy')).toBe('true');
+    expect(compiled.querySelector('.loading-mask')?.textContent).toContain('正在測試…');
   });
 });

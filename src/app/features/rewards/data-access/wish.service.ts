@@ -1,4 +1,4 @@
-import { Injectable, effect, signal } from '@angular/core';
+import { Injectable, effect, inject, signal } from '@angular/core';
 import {
   addDoc,
   collection,
@@ -13,11 +13,13 @@ import {
 import { AuthService } from '../../../core/auth/auth.service';
 import { ConnectivityService } from '../../../core/connectivity/connectivity.service';
 import { getFirebaseServices } from '../../../core/firebase/firebase-services';
+import { LoadingService } from '../../../core/loading/loading.service';
 import { MAX_WISH_NAME_LENGTH, RewardWish, toDate } from '../../../shared/models/models';
 
 @Injectable({ providedIn: 'root' })
 export class WishService {
   private readonly services = getFirebaseServices();
+  private readonly globalLoading = inject(LoadingService);
   private readonly wishState = signal<RewardWish[]>([]);
 
   readonly wishes = this.wishState.asReadonly();
@@ -68,25 +70,31 @@ export class WishService {
   async createWish(name: string): Promise<void> {
     const user = this.requireWritableUser();
     const cleanName = this.validateName(name);
-    await addDoc(collection(this.services!.firestore, 'users', user.uid, 'wishes'), {
-      name: cleanName,
-      createdAt: serverTimestamp(),
-      updatedAt: serverTimestamp(),
-    });
+    await this.globalLoading.run('正在新增願望…', () =>
+      addDoc(collection(this.services!.firestore, 'users', user.uid, 'wishes'), {
+        name: cleanName,
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
+      }),
+    );
   }
 
   async renameWish(wishId: string, name: string): Promise<void> {
     const user = this.requireWritableUser();
     const cleanName = this.validateName(name);
-    await updateDoc(doc(this.services!.firestore, 'users', user.uid, 'wishes', wishId), {
-      name: cleanName,
-      updatedAt: serverTimestamp(),
-    });
+    await this.globalLoading.run('正在修改願望…', () =>
+      updateDoc(doc(this.services!.firestore, 'users', user.uid, 'wishes', wishId), {
+        name: cleanName,
+        updatedAt: serverTimestamp(),
+      }),
+    );
   }
 
   async deleteWish(wishId: string): Promise<void> {
     const user = this.requireWritableUser();
-    await deleteDoc(doc(this.services!.firestore, 'users', user.uid, 'wishes', wishId));
+    await this.globalLoading.run('正在刪除願望…', () =>
+      deleteDoc(doc(this.services!.firestore, 'users', user.uid, 'wishes', wishId)),
+    );
   }
 
   private validateName(name: string): string {

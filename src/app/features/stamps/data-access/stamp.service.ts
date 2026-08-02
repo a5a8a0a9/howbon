@@ -1,4 +1,4 @@
-import { Injectable, computed, effect, signal } from '@angular/core';
+import { Injectable, computed, effect, inject, signal } from '@angular/core';
 import {
   collection,
   doc,
@@ -13,6 +13,7 @@ import {
 import { AuthService } from '../../../core/auth/auth.service';
 import { ConnectivityService } from '../../../core/connectivity/connectivity.service';
 import { getFirebaseServices } from '../../../core/firebase/firebase-services';
+import { LoadingService } from '../../../core/loading/loading.service';
 import {
   AddStampResult,
   MAX_STAMP_NOTE_LENGTH,
@@ -32,6 +33,7 @@ const EMPTY_PROGRESS: UserProgress = {
 @Injectable({ providedIn: 'root' })
 export class StampService {
   private readonly services = getFirebaseServices();
+  private readonly globalLoading = inject(LoadingService);
   private readonly progressState = signal<UserProgress>(EMPTY_PROGRESS);
   private readonly stampState = signal<StampRecord[]>([]);
 
@@ -120,55 +122,57 @@ export class StampService {
     this.saving.set(true);
     this.error.set(null);
     try {
-      return await runTransaction(this.services.firestore, async (transaction) => {
-        const profileRef = doc(this.services!.firestore, 'users', user.uid);
-        const profileSnapshot = await transaction.get(profileRef);
-        if (!profileSnapshot.exists()) {
-          throw new Error('找不到帳號資料，請重新登入。');
-        }
+      return await this.globalLoading.run('正在蓋下好棒章…', () =>
+        runTransaction(this.services!.firestore, async (transaction) => {
+          const profileRef = doc(this.services!.firestore, 'users', user.uid);
+          const profileSnapshot = await transaction.get(profileRef);
+          if (!profileSnapshot.exists()) {
+            throw new Error('找不到帳號資料，請重新登入。');
+          }
 
-        const profile = profileSnapshot.data();
-        const currentCount = Number(profile['currentStampCount'] ?? 0);
-        const badgeCount = Number(profile['badgeCount'] ?? 0);
-        const unlocked = currentCount === STAMPS_PER_BADGE - 1;
-        const nextBadgeOrdinal = unlocked ? badgeCount + 1 : null;
-        const stampRef = doc(collection(this.services!.firestore, 'users', user.uid, 'stamps'));
+          const profile = profileSnapshot.data();
+          const currentCount = Number(profile['currentStampCount'] ?? 0);
+          const badgeCount = Number(profile['badgeCount'] ?? 0);
+          const unlocked = currentCount === STAMPS_PER_BADGE - 1;
+          const nextBadgeOrdinal = unlocked ? badgeCount + 1 : null;
+          const stampRef = doc(collection(this.services!.firestore, 'users', user.uid, 'stamps'));
 
-        transaction.set(stampRef, {
-          note: cleanNote,
-          createdAt: serverTimestamp(),
-          updatedAt: serverTimestamp(),
-        });
-        transaction.update(profileRef, {
-          currentStampCount: unlocked ? 0 : currentCount + 1,
-          badgeCount: unlocked ? badgeCount + 1 : badgeCount,
-          updatedAt: serverTimestamp(),
-        });
-
-        if (nextBadgeOrdinal !== null) {
-          const ticketRef = doc(
-            this.services!.firestore,
-            'users',
-            user.uid,
-            'tickets',
-            `badge-${nextBadgeOrdinal}`,
-          );
-          transaction.set(ticketRef, {
-            badgeOrdinal: nextBadgeOrdinal,
-            status: 'available',
-            wishId: null,
-            rewardNameSnapshot: null,
+          transaction.set(stampRef, {
+            note: cleanNote,
             createdAt: serverTimestamp(),
-            redeemedAt: null,
+            updatedAt: serverTimestamp(),
           });
-        }
+          transaction.update(profileRef, {
+            currentStampCount: unlocked ? 0 : currentCount + 1,
+            badgeCount: unlocked ? badgeCount + 1 : badgeCount,
+            updatedAt: serverTimestamp(),
+          });
 
-        return {
-          unlocked,
-          badgeOrdinal: nextBadgeOrdinal,
-          currentStampCount: unlocked ? 0 : currentCount + 1,
-        };
-      });
+          if (nextBadgeOrdinal !== null) {
+            const ticketRef = doc(
+              this.services!.firestore,
+              'users',
+              user.uid,
+              'tickets',
+              `badge-${nextBadgeOrdinal}`,
+            );
+            transaction.set(ticketRef, {
+              badgeOrdinal: nextBadgeOrdinal,
+              status: 'available',
+              wishId: null,
+              rewardNameSnapshot: null,
+              createdAt: serverTimestamp(),
+              redeemedAt: null,
+            });
+          }
+
+          return {
+            unlocked,
+            badgeOrdinal: nextBadgeOrdinal,
+            currentStampCount: unlocked ? 0 : currentCount + 1,
+          };
+        }),
+      );
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : '蓋章失敗，請稍後重試。';
       this.error.set(message);
@@ -187,10 +191,12 @@ export class StampService {
     if (!this.services) {
       throw new Error('Firebase 尚未設定。');
     }
-    await updateDoc(doc(this.services.firestore, 'users', user.uid, 'stamps', stampId), {
-      note: cleanNote,
-      updatedAt: serverTimestamp(),
-    });
+    await this.globalLoading.run('正在儲存留言…', () =>
+      updateDoc(doc(this.services!.firestore, 'users', user.uid, 'stamps', stampId), {
+        note: cleanNote,
+        updatedAt: serverTimestamp(),
+      }),
+    );
   }
 
   clearError(): void {

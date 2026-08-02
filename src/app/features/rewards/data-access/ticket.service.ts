@@ -1,4 +1,4 @@
-import { Injectable, computed, effect, signal } from '@angular/core';
+import { Injectable, computed, effect, inject, signal } from '@angular/core';
 import {
   collection,
   doc,
@@ -11,11 +11,13 @@ import {
 import { AuthService } from '../../../core/auth/auth.service';
 import { ConnectivityService } from '../../../core/connectivity/connectivity.service';
 import { getFirebaseServices } from '../../../core/firebase/firebase-services';
+import { LoadingService } from '../../../core/loading/loading.service';
 import { RewardTicket, RewardWish, toDate } from '../../../shared/models/models';
 
 @Injectable({ providedIn: 'root' })
 export class TicketService {
   private readonly services = getFirebaseServices();
+  private readonly globalLoading = inject(LoadingService);
   private readonly ticketState = signal<RewardTicket[]>([]);
 
   readonly tickets = this.ticketState.asReadonly();
@@ -84,34 +86,36 @@ export class TicketService {
       throw new Error('目前離線，連線後才能兌換票券。');
     }
 
-    await runTransaction(this.services.firestore, async (transaction) => {
-      const ticketRef = doc(this.services!.firestore, 'users', user.uid, 'tickets', ticketId);
-      const ticketSnapshot = await transaction.get(ticketRef);
-      if (!ticketSnapshot.exists()) {
-        throw new Error('找不到這張票券，請重新整理。');
-      }
-      if (ticketSnapshot.data()['status'] !== 'available') {
-        throw new Error('這張票券已經兌換過了。');
-      }
-
-      let wishId: string | null = null;
-      let rewardNameSnapshot: string | null = null;
-      if (wish) {
-        const wishRef = doc(this.services!.firestore, 'users', user.uid, 'wishes', wish.id);
-        const wishSnapshot = await transaction.get(wishRef);
-        if (!wishSnapshot.exists()) {
-          throw new Error('選擇的願望已不存在，請重新選擇或自由兌換。');
+    await this.globalLoading.run('正在兌換票券…', () =>
+      runTransaction(this.services!.firestore, async (transaction) => {
+        const ticketRef = doc(this.services!.firestore, 'users', user.uid, 'tickets', ticketId);
+        const ticketSnapshot = await transaction.get(ticketRef);
+        if (!ticketSnapshot.exists()) {
+          throw new Error('找不到這張票券，請重新整理。');
         }
-        wishId = wish.id;
-        rewardNameSnapshot = String(wishSnapshot.data()['name']);
-      }
+        if (ticketSnapshot.data()['status'] !== 'available') {
+          throw new Error('這張票券已經兌換過了。');
+        }
 
-      transaction.update(ticketRef, {
-        status: 'redeemed',
-        wishId,
-        rewardNameSnapshot,
-        redeemedAt: serverTimestamp(),
-      });
-    });
+        let wishId: string | null = null;
+        let rewardNameSnapshot: string | null = null;
+        if (wish) {
+          const wishRef = doc(this.services!.firestore, 'users', user.uid, 'wishes', wish.id);
+          const wishSnapshot = await transaction.get(wishRef);
+          if (!wishSnapshot.exists()) {
+            throw new Error('選擇的願望已不存在，請重新選擇或自由兌換。');
+          }
+          wishId = wish.id;
+          rewardNameSnapshot = String(wishSnapshot.data()['name']);
+        }
+
+        transaction.update(ticketRef, {
+          status: 'redeemed',
+          wishId,
+          rewardNameSnapshot,
+          redeemedAt: serverTimestamp(),
+        });
+      }),
+    );
   }
 }

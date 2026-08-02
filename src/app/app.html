@@ -1,4 +1,8 @@
-<div class="app-shell">
+<div
+  class="app-shell"
+  [attr.inert]="loading.active() ? '' : null"
+  [attr.aria-busy]="loading.active()"
+>
   <div class="paper-noise" aria-hidden="true"></div>
   <header class="site-header">
     <a class="brand" href="#top" aria-label="好棒棒集章首頁"
@@ -61,6 +65,8 @@
     </footer>
   }
 </div>
+
+<app-loading-mask />
 
 @if (showInstallHelp()) {
   <app-dialog title="安裝到 iPhone" titleId="install-title">
