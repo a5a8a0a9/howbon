@@ -6,7 +6,7 @@ import {
   persistentLocalCache,
   persistentMultipleTabManager,
 } from 'firebase/firestore';
-import { environment } from '../environments/environment';
+import { environment } from '../../../environments/environment';
 
 export interface FirebaseServices {
   app: FirebaseApp;

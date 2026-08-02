@@ -1,10 +1,10 @@
 import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { describe, expect, it, vi } from 'vitest';
-import { ConnectivityService } from './connectivity.service';
+import { ConnectivityService } from '../../../../core/connectivity/connectivity.service';
+import { TicketService } from '../../data-access/ticket.service';
+import { WishService } from '../../data-access/wish.service';
 import { RewardsComponent } from './rewards.component';
-import { TicketService } from './ticket.service';
-import { WishService } from './wish.service';
 
 describe('RewardsComponent', () => {
   it('creates reusable wishes and offers free redemption', async () => {

@@ -1,0 +1,57 @@
+<section class="journal" aria-labelledby="journal-title">
+  <div class="section-heading">
+    <div>
+      <p>HOW BON JOURNAL</p>
+      <h2 id="journal-title">集章日誌</h2>
+    </div>
+    <span>{{ stamps.stamps().length }} 筆紀錄</span>
+  </div>
+
+  @if (stamps.loading()) {
+    <p class="empty">正在整理你的好棒時刻…</p>
+  } @else if (stamps.stamps().length === 0) {
+    <div class="empty-card">
+      <span class="material-symbols-rounded" aria-hidden="true">notes</span>
+      <h3>第一篇日誌等你寫下</h3>
+      <p>每次蓋章都會留在這裡，沒有留言也沒關係。</p>
+    </div>
+  } @else {
+    <ol class="timeline">
+      @for (stamp of stamps.stamps(); track stamp.id; let index = $index) {
+        <li>
+          <div class="stamp-dot" aria-hidden="true">{{ stamps.stamps().length - index }}</div>
+          <article>
+            <time>{{ stamp.createdAt | date: 'yyyy/MM/dd HH:mm' }}</time>
+            <p [class.no-note]="!stamp.note">
+              {{ stamp.note || '這次沒有留下文字，但進步已經被收藏。' }}
+            </p>
+            <button type="button" [disabled]="!connectivity.online()" (click)="openEdit(stamp)">
+              <span class="material-symbols-rounded" aria-hidden="true">edit</span> 編輯留言
+            </button>
+          </article>
+        </li>
+      }
+    </ol>
+  }
+</section>
+
+@if (editingStamp()) {
+  <div class="modal-backdrop">
+    <section class="modal" role="dialog" aria-modal="true" aria-labelledby="edit-note-title">
+      <h2 id="edit-note-title">編輯這次的留言</h2>
+      <textarea [(ngModel)]="editNote" [maxLength]="maxNoteLength" rows="5"></textarea>
+      <small>{{ editNote.length }} / {{ maxNoteLength }}；清空後仍會保留蓋章。</small>
+      @if (editError()) {
+        <p class="error" role="alert">{{ editError() }}</p>
+      }
+      <div class="actions">
+        <button class="secondary" type="button" [disabled]="saving()" (click)="closeEdit()">
+          取消
+        </button>
+        <button class="primary" type="button" [disabled]="saving()" (click)="saveEdit()">
+          {{ saving() ? '儲存中…' : '儲存留言' }}
+        </button>
+      </div>
+    </section>
+  </div>
+}

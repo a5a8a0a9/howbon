@@ -4,7 +4,7 @@ import { SwUpdate } from '@angular/service-worker';
 import { EMPTY } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 import { App } from './app';
-import { AuthService } from './auth.service';
+import { AuthService } from './core/auth/auth.service';
 
 function swUpdateStub() {
   return {

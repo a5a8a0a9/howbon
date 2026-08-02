@@ -1,16 +1,16 @@
 import { DatePipe } from '@angular/common';
 import { Component, HostListener, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ConnectivityService } from './connectivity.service';
-import { MAX_WISH_NAME_LENGTH, RewardTicket, RewardWish } from './models';
-import { TicketService } from './ticket.service';
-import { WishService } from './wish.service';
+import { ConnectivityService } from '../../../../core/connectivity/connectivity.service';
+import { MAX_WISH_NAME_LENGTH, RewardTicket, RewardWish } from '../../../../shared/models/models';
+import { TicketService } from '../../data-access/ticket.service';
+import { WishService } from '../../data-access/wish.service';
 
 @Component({
   selector: 'app-rewards',
   imports: [DatePipe, FormsModule],
   templateUrl: './rewards.component.html',
-  styleUrl: './rewards.component.css',
+  styleUrl: './rewards.component.scss',
 })
 export class RewardsComponent {
   protected readonly tickets = inject(TicketService);

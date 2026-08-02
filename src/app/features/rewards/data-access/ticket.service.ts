@@ -8,10 +8,10 @@ import {
   runTransaction,
   serverTimestamp,
 } from 'firebase/firestore';
-import { AuthService } from './auth.service';
-import { ConnectivityService } from './connectivity.service';
-import { getFirebaseServices } from './firebase-services';
-import { RewardTicket, RewardWish, toDate } from './models';
+import { AuthService } from '../../../core/auth/auth.service';
+import { ConnectivityService } from '../../../core/connectivity/connectivity.service';
+import { getFirebaseServices } from '../../../core/firebase/firebase-services';
+import { RewardTicket, RewardWish, toDate } from '../../../shared/models/models';
 
 @Injectable({ providedIn: 'root' })
 export class TicketService {

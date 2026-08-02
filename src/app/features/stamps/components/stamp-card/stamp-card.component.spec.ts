@@ -1,9 +1,9 @@
 import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { describe, expect, it, vi } from 'vitest';
-import { ConnectivityService } from './connectivity.service';
+import { ConnectivityService } from '../../../../core/connectivity/connectivity.service';
+import { StampService } from '../../data-access/stamp.service';
 import { StampCardComponent } from './stamp-card.component';
-import { StampService } from './stamp.service';
 
 describe('StampCardComponent', () => {
   async function setup(unlocked = false): Promise<{

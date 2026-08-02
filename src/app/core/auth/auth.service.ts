@@ -7,8 +7,8 @@ import {
   signOut,
 } from 'firebase/auth';
 import { doc, getDoc, serverTimestamp, setDoc } from 'firebase/firestore';
-import { getFirebaseServices, isFirebaseConfigured } from './firebase-services';
-import { AppUserProfile } from './models';
+import { AppUserProfile } from '../../shared/models/models';
+import { getFirebaseServices, isFirebaseConfigured } from '../firebase/firebase-services';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {

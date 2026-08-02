@@ -3,12 +3,12 @@ import { Component, DestroyRef, HostListener, inject, signal } from '@angular/co
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { SwUpdate, VersionReadyEvent } from '@angular/service-worker';
 import { filter } from 'rxjs';
-import { AuthService } from './auth.service';
-import { ConnectivityService } from './connectivity.service';
-import { LoginComponent } from './login.component';
-import { RewardsComponent } from './rewards.component';
-import { StampCardComponent } from './stamp-card.component';
-import { StampJournalComponent } from './stamp-journal.component';
+import { AuthService } from './core/auth/auth.service';
+import { ConnectivityService } from './core/connectivity/connectivity.service';
+import { LoginComponent } from './features/auth/login/login.component';
+import { RewardsComponent } from './features/rewards/components/rewards/rewards.component';
+import { StampCardComponent } from './features/stamps/components/stamp-card/stamp-card.component';
+import { StampJournalComponent } from './features/stamps/components/stamp-journal/stamp-journal.component';
 
 interface BeforeInstallPromptEvent extends Event {
   prompt(): Promise<void>;
@@ -19,7 +19,7 @@ interface BeforeInstallPromptEvent extends Event {
   selector: 'app-root',
   imports: [LoginComponent, RewardsComponent, StampCardComponent, StampJournalComponent],
   templateUrl: './app.html',
-  styleUrl: './app.css',
+  styleUrl: './app.scss',
 })
 export class App {
   private readonly document = inject(DOCUMENT);

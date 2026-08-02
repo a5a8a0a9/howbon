@@ -10,9 +10,9 @@ import {
   serverTimestamp,
   updateDoc,
 } from 'firebase/firestore';
-import { AuthService } from './auth.service';
-import { ConnectivityService } from './connectivity.service';
-import { getFirebaseServices } from './firebase-services';
+import { AuthService } from '../../../core/auth/auth.service';
+import { ConnectivityService } from '../../../core/connectivity/connectivity.service';
+import { getFirebaseServices } from '../../../core/firebase/firebase-services';
 import {
   AddStampResult,
   MAX_STAMP_NOTE_LENGTH,
@@ -20,7 +20,7 @@ import {
   StampRecord,
   UserProgress,
   toDate,
-} from './models';
+} from '../../../shared/models/models';
 
 const EMPTY_PROGRESS: UserProgress = {
   schemaVersion: 1,

@@ -10,10 +10,10 @@ import {
   serverTimestamp,
   updateDoc,
 } from 'firebase/firestore';
-import { AuthService } from './auth.service';
-import { ConnectivityService } from './connectivity.service';
-import { getFirebaseServices } from './firebase-services';
-import { MAX_WISH_NAME_LENGTH, RewardWish, toDate } from './models';
+import { AuthService } from '../../../core/auth/auth.service';
+import { ConnectivityService } from '../../../core/connectivity/connectivity.service';
+import { getFirebaseServices } from '../../../core/firebase/firebase-services';
+import { MAX_WISH_NAME_LENGTH, RewardWish, toDate } from '../../../shared/models/models';
 
 @Injectable({ providedIn: 'root' })
 export class WishService {
