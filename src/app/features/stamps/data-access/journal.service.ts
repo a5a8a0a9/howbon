@@ -1,4 +1,9 @@
 import { Injectable, computed, effect, inject, signal } from '@angular/core';
+import { AuthService } from '@core/auth/auth.service';
+import { ConnectivityService } from '@core/connectivity/connectivity.service';
+import { getFirebaseServices } from '@core/firebase/firebase-services';
+import { LoadingService } from '@core/loading/loading.service';
+import { MAX_STAMP_NOTE_LENGTH, StampRecord, toDate } from '@shared/models/models';
 import {
   collection,
   doc,
@@ -9,11 +14,6 @@ import {
   updateDoc,
   where,
 } from 'firebase/firestore';
-import { AuthService } from '../../../core/auth/auth.service';
-import { ConnectivityService } from '../../../core/connectivity/connectivity.service';
-import { getFirebaseServices } from '../../../core/firebase/firebase-services';
-import { LoadingService } from '../../../core/loading/loading.service';
-import { MAX_STAMP_NOTE_LENGTH, StampRecord, toDate } from '../../../shared/models/models';
 
 export interface MonthBounds {
   start: Date;
@@ -94,7 +94,7 @@ export class JournalService {
           this.loading.set(false);
         },
         () => {
-          this.error.set('無法讀取這個月的集章日誌，請稍後重試。');
+          this.error.set('無法讀取這個月的好棒日誌，請稍後重試。');
           this.loading.set(false);
         },
       );

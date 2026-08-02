@@ -40,6 +40,18 @@ h1 {
   line-height: 0.94;
   letter-spacing: -0.07em;
 
+  .title-celebration-trigger {
+    border: 0;
+    padding: 0;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    line-height: inherit;
+    letter-spacing: inherit;
+    text-align: left;
+    cursor: pointer;
+  }
+
   em {
     position: relative;
     display: inline-block;
@@ -126,6 +138,13 @@ h1 {
   padding: 34px;
   border-radius: 90px 24px 80px 30px;
   background: rgb(226 218 190 / 48%);
+  -webkit-tap-highlight-color: transparent;
+  cursor: pointer;
+
+  &:focus-visible {
+    outline: 3px solid #3f7162;
+    outline-offset: 3px;
+  }
 }
 
 .badge-art {

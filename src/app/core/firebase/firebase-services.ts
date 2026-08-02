@@ -1,3 +1,4 @@
+import { environment } from '@environment';
 import { FirebaseApp, FirebaseOptions, getApp, getApps, initializeApp } from 'firebase/app';
 import { Auth, getAuth } from 'firebase/auth';
 import {
@@ -6,7 +7,6 @@ import {
   persistentLocalCache,
   persistentMultipleTabManager,
 } from 'firebase/firestore';
-import { environment } from '../../../environments/environment';
 
 export interface FirebaseServices {
   app: FirebaseApp;

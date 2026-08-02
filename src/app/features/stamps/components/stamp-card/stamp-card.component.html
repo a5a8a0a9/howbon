@@ -58,13 +58,13 @@
     closeLabel="關閉"
     (dismissed)="closeNote()"
   >
-    <p>留言可以留白，之後也能在集章日誌中修改。</p>
+    <p>留言可以留白，之後也能在好棒日誌中修改。</p>
     <textarea
       name="stampNote"
       [(ngModel)]="note"
       [maxLength]="maxNoteLength"
       rows="5"
-      placeholder="例如：完成了拖很久的報告！"
+      placeholder="例如：我比昨天更進步了！我好棒～"
       [disabled]="stamps.saving()"
     ></textarea>
     <div class="field-meta">
@@ -78,7 +78,7 @@
         取消
       </button>
       <button class="primary" type="button" [disabled]="stamps.saving()" (click)="submitStamp()">
-        {{ stamps.saving() ? '正在蓋章…' : '確認蓋章' }}
+        {{ stamps.saving() ? '正在蓋章…' : '蓋章' }}
       </button>
     </div>
   </app-dialog>

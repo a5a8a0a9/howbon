@@ -1,7 +1,8 @@
 import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { describe, expect, it, vi } from 'vitest';
-import { ConnectivityService } from '../../../../core/connectivity/connectivity.service';
+import { CelebrationService } from '@core/celebration/celebration.service';
+import { ConnectivityService } from '@core/connectivity/connectivity.service';
 import { StampService } from '../../data-access/stamp.service';
 import { StampCardComponent } from './stamp-card.component';
 
@@ -9,6 +10,7 @@ describe('StampCardComponent', () => {
   async function setup(unlocked = false): Promise<{
     fixture: ComponentFixture<StampCardComponent>;
     addStamp: ReturnType<typeof vi.fn>;
+    triggerCelebration: ReturnType<typeof vi.fn>;
   }> {
     const addStamp = vi.fn().mockResolvedValue({
       unlocked,
@@ -21,16 +23,18 @@ describe('StampCardComponent', () => {
       saving: signal(false),
       addStamp,
     };
+    const triggerCelebration = vi.fn();
     await TestBed.configureTestingModule({
       imports: [StampCardComponent],
       providers: [
         { provide: StampService, useValue: stampStub },
+        { provide: CelebrationService, useValue: { trigger: triggerCelebration } },
         { provide: ConnectivityService, useValue: { online: signal(true) } },
       ],
     }).compileComponents();
     const fixture = TestBed.createComponent(StampCardComponent);
     fixture.detectChanges();
-    return { fixture, addStamp };
+    return { fixture, addStamp, triggerCelebration };
   }
 
   it('opens an optional note dialog before adding a stamp', async () => {
@@ -45,6 +49,17 @@ describe('StampCardComponent', () => {
     (root.querySelector('.dialog-card .primary') as HTMLButtonElement).click();
     await fixture.whenStable();
     expect(addStamp).toHaveBeenCalledWith('');
+  });
+
+  it('triggers confetti after every successful stamp', async () => {
+    const { fixture, triggerCelebration } = await setup();
+    const root = fixture.nativeElement as HTMLElement;
+    (root.querySelector('.stamp-button') as HTMLButtonElement).click();
+    fixture.detectChanges();
+    (root.querySelector('.dialog-card .primary') as HTMLButtonElement).click();
+    await fixture.whenStable();
+
+    expect(triggerCelebration).toHaveBeenCalledOnce();
   });
 
   it('shows a badge and ticket celebration after the fifth stamp', async () => {

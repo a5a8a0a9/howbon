@@ -1,13 +1,13 @@
 import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { SwUpdate } from '@angular/service-worker';
 import { provideRouter, Router } from '@angular/router';
+import { SwUpdate } from '@angular/service-worker';
+import { AuthService } from '@core/auth/auth.service';
+import { LoadingService } from '@core/loading/loading.service';
 import { EMPTY } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 import { App } from './app';
 import { routes } from './app.routes';
-import { AuthService } from './core/auth/auth.service';
-import { LoadingService } from './core/loading/loading.service';
 import { StampService } from './features/stamps/data-access/stamp.service';
 
 function swUpdateStub() {
@@ -87,6 +87,10 @@ describe('App', () => {
     expect(compiled.querySelector('.badge-copy')?.getAttribute('aria-label')).toBe(
       '已收藏 3 枚徽章',
     );
+
+    compiled.querySelector('.brand')?.dispatchEvent(new Event('pointerup'));
+    fixture.detectChanges();
+    expect(compiled.querySelectorAll('.confetti')).toHaveLength(14);
   });
 
   it('blocks the application while a global action is running', async () => {

@@ -5,7 +5,12 @@
 >
   <div class="paper-noise" aria-hidden="true"></div>
   <header class="site-header">
-    <a class="brand" routerLink="/home" aria-label="好棒棒集章首頁"
+    <a
+      class="brand"
+      routerLink="/home"
+      aria-label="好棒棒集章首頁"
+      (pointerup)="celebration.trigger()"
+      (keydown.enter)="celebration.trigger()"
       ><span class="brand-mark" aria-hidden="true">棒</span><span>好棒棒集章</span></a
     >
     <div class="header-actions">
@@ -51,6 +56,14 @@
     <app-bottom-nav />
   }
 </div>
+
+@if (celebration.pieces().length) {
+  <div class="confetti-layer" aria-hidden="true">
+    @for (piece of celebration.pieces(); track piece) {
+      <span class="confetti"></span>
+    }
+  </div>
+}
 
 <app-loading-mask />
 

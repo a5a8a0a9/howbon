@@ -1,8 +1,8 @@
 import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
+import { AuthService } from '@core/auth/auth.service';
+import { ConnectivityService } from '@core/connectivity/connectivity.service';
 import { describe, expect, it } from 'vitest';
-import { AuthService } from '../../../core/auth/auth.service';
-import { ConnectivityService } from '../../../core/connectivity/connectivity.service';
 import { JournalService, monthBounds, normalizeMonth, shiftMonth } from './journal.service';
 
 describe('monthly journal helpers', () => {

@@ -1,8 +1,9 @@
 import { Component, HostListener, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ConnectivityService } from '../../../../core/connectivity/connectivity.service';
-import { MAX_STAMP_NOTE_LENGTH, STAMPS_PER_BADGE } from '../../../../shared/models/models';
-import { AppDialogComponent } from '../../../../shared/ui/app-dialog/app-dialog.component';
+import { CelebrationService } from '@core/celebration/celebration.service';
+import { ConnectivityService } from '@core/connectivity/connectivity.service';
+import { MAX_STAMP_NOTE_LENGTH, STAMPS_PER_BADGE } from '@shared/models/models';
+import { AppDialogComponent } from '@shared/ui/app-dialog/app-dialog.component';
 import { StampService } from '../../data-access/stamp.service';
 
 @Component({
@@ -13,6 +14,7 @@ import { StampService } from '../../data-access/stamp.service';
 })
 export class StampCardComponent {
   protected readonly stamps = inject(StampService);
+  protected readonly celebration = inject(CelebrationService);
   protected readonly connectivity = inject(ConnectivityService);
   protected readonly stampSlots = Array.from({ length: STAMPS_PER_BADGE }, (_, index) => index);
   protected readonly stampsPerBadge = STAMPS_PER_BADGE;
@@ -53,6 +55,7 @@ export class StampCardComponent {
     try {
       const result = await this.stamps.addStamp(this.note);
       this.showNoteModal.set(false);
+      this.celebration.trigger();
       if (result.unlocked) {
         this.unlockedBadgeOrdinal.set(result.badgeOrdinal);
         this.showCelebration.set(true);

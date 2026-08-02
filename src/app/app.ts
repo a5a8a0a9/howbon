@@ -1,7 +1,6 @@
 import { DOCUMENT } from '@angular/common';
 import { Component, DestroyRef, HostListener, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { SwUpdate, VersionReadyEvent } from '@angular/service-worker';
 import {
   NavigationCancel,
   NavigationEnd,
@@ -11,14 +10,16 @@ import {
   RouterLink,
   RouterOutlet,
 } from '@angular/router';
+import { SwUpdate, VersionReadyEvent } from '@angular/service-worker';
+import { AuthService } from '@core/auth/auth.service';
+import { CelebrationService } from '@core/celebration/celebration.service';
+import { ConnectivityService } from '@core/connectivity/connectivity.service';
+import { LoadingService } from '@core/loading/loading.service';
+import { AppDialogComponent } from '@shared/ui/app-dialog/app-dialog.component';
+import { BottomNavComponent } from '@shared/ui/bottom-nav/bottom-nav.component';
+import { LoadingMaskComponent } from '@shared/ui/loading-mask/loading-mask.component';
 import { filter } from 'rxjs';
-import { AuthService } from './core/auth/auth.service';
-import { ConnectivityService } from './core/connectivity/connectivity.service';
-import { LoadingService } from './core/loading/loading.service';
 import { LoginComponent } from './features/auth/login/login.component';
-import { AppDialogComponent } from './shared/ui/app-dialog/app-dialog.component';
-import { BottomNavComponent } from './shared/ui/bottom-nav/bottom-nav.component';
-import { LoadingMaskComponent } from './shared/ui/loading-mask/loading-mask.component';
 
 interface BeforeInstallPromptEvent extends Event {
   prompt(): Promise<void>;
@@ -44,6 +45,7 @@ export class App {
   private readonly swUpdate = inject(SwUpdate);
   private readonly router = inject(Router);
   protected readonly auth = inject(AuthService);
+  protected readonly celebration = inject(CelebrationService);
   protected readonly connectivity = inject(ConnectivityService);
   protected readonly loading = inject(LoadingService);
   protected readonly updateReady = signal(false);
