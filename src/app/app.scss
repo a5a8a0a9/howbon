@@ -3,15 +3,6 @@
   min-height: 100dvh;
   color: #403129;
 }
-button,
-a {
-  -webkit-tap-highlight-color: transparent;
-}
-button:focus-visible,
-a:focus-visible {
-  outline: 3px solid #3f7162;
-  outline-offset: 4px;
-}
 .app-shell {
   position: relative;
   min-height: 100dvh;
@@ -214,41 +205,9 @@ a:focus-visible {
   color: #4b3a32;
   letter-spacing: 0.08em;
 }
-.global-modal-backdrop {
-  position: fixed;
-  z-index: 50;
-  inset: 0;
-  display: grid;
-  place-items: center;
-  padding: 22px;
-  background: rgb(54 38 31 / 62%);
-  backdrop-filter: blur(6px);
-}
-.global-modal {
-  width: min(400px, 100%);
-  padding: 34px;
-  border-radius: 26px;
-  background: #fffaf0;
-  color: #4b3930;
-  text-align: center;
-}
-.global-modal h2 {
-  margin-top: 0;
-}
-.global-modal p {
+app-dialog > p {
   color: #79675c;
   line-height: 1.7;
-}
-.global-modal button {
-  width: 100%;
-  min-height: 46px;
-  border: 0;
-  border-radius: 12px;
-  background: #ca5948;
-  color: white;
-  font: inherit;
-  font-weight: 800;
-  cursor: pointer;
 }
 .update-toast {
   position: fixed;
@@ -335,15 +294,5 @@ a:focus-visible {
     bottom: 14px;
     left: 14px;
     justify-content: space-between;
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    scroll-behavior: auto !important;
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
   }
 }

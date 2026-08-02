@@ -52,52 +52,47 @@
 </section>
 
 @if (showNoteModal()) {
-  <div class="modal-backdrop" (click)="backdropClose($event)">
-    <section class="modal" role="dialog" aria-modal="true" aria-labelledby="note-title">
-      <button class="icon-close" type="button" aria-label="關閉" (click)="closeNote()">
-        <span class="material-symbols-rounded" aria-hidden="true">close</span>
+  <app-dialog
+    title="這次想記下什麼？"
+    titleId="note-title"
+    kicker="NEW STAMP"
+    closeLabel="關閉"
+    (dismissed)="closeNote()"
+  >
+    <p>留言可以留白，之後也能在集章日誌中修改。</p>
+    <textarea
+      name="stampNote"
+      [(ngModel)]="note"
+      [maxLength]="maxNoteLength"
+      rows="5"
+      placeholder="例如：完成了拖很久的報告！"
+      [disabled]="stamps.saving()"
+    ></textarea>
+    <div class="field-meta">
+      <span>{{ note.length }} / {{ maxNoteLength }}</span>
+    </div>
+    @if (submitError()) {
+      <p class="form-error" role="alert">{{ submitError() }}</p>
+    }
+    <div class="dialog-actions">
+      <button class="secondary" type="button" [disabled]="stamps.saving()" (click)="closeNote()">
+        取消
       </button>
-      <p class="modal-kicker">NEW STAMP</p>
-      <h2 id="note-title">這次想記下什麼？</h2>
-      <p>留言可以留白，之後也能在集章日誌中修改。</p>
-      <textarea
-        name="stampNote"
-        [(ngModel)]="note"
-        [maxLength]="maxNoteLength"
-        rows="5"
-        placeholder="例如：完成了拖很久的報告！"
-        [disabled]="stamps.saving()"
-      ></textarea>
-      <div class="field-meta">
-        <span>{{ note.length }} / {{ maxNoteLength }}</span>
-      </div>
-      @if (submitError()) {
-        <p class="form-error" role="alert">{{ submitError() }}</p>
-      }
-      <div class="modal-actions">
-        <button class="secondary" type="button" [disabled]="stamps.saving()" (click)="closeNote()">
-          取消
-        </button>
-        <button class="primary" type="button" [disabled]="stamps.saving()" (click)="submitStamp()">
-          {{ stamps.saving() ? '正在蓋章…' : '確認蓋章' }}
-        </button>
-      </div>
-    </section>
-  </div>
+      <button class="primary" type="button" [disabled]="stamps.saving()" (click)="submitStamp()">
+        {{ stamps.saving() ? '正在蓋章…' : '確認蓋章' }}
+      </button>
+    </div>
+  </app-dialog>
 }
 
 @if (showCelebration()) {
-  <div class="modal-backdrop celebration">
-    <section class="modal" role="dialog" aria-modal="true" aria-labelledby="celebration-title">
-      <div class="mini-badge" aria-hidden="true">
-        <span class="material-symbols-rounded">celebration</span>
-      </div>
-      <p class="modal-kicker">NEW BADGE & TICKET</p>
-      <h2 id="celebration-title">集滿了，好棒！</h2>
-      <p>第 {{ unlockedBadgeOrdinal() }} 枚徽章已收藏，也獲得一張可以自由兌換或選擇願望的票券。</p>
-      <button class="primary wide" type="button" (click)="showCelebration.set(false)">
-        收下獎勵
-      </button>
-    </section>
-  </div>
+  <app-dialog title="集滿了，好棒！" titleId="celebration-title" kicker="NEW BADGE & TICKET">
+    <div dialog-icon class="mini-badge" aria-hidden="true">
+      <span class="material-symbols-rounded">celebration</span>
+    </div>
+    <p>第 {{ unlockedBadgeOrdinal() }} 枚徽章已收藏，也獲得一張可以自由兌換或選擇願望的票券。</p>
+    <button class="primary wide" type="button" (click)="showCelebration.set(false)">
+      收下獎勵
+    </button>
+  </app-dialog>
 }

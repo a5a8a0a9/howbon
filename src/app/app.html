@@ -63,13 +63,10 @@
 </div>
 
 @if (showInstallHelp()) {
-  <div class="global-modal-backdrop">
-    <section class="global-modal" role="dialog" aria-modal="true" aria-labelledby="install-title">
-      <h2 id="install-title">安裝到 iPhone</h2>
-      <p>在 Safari 點選分享，再選擇「加入主畫面」，就能像 App 一樣開啟。</p>
-      <button type="button" (click)="showInstallHelp.set(false)">知道了</button>
-    </section>
-  </div>
+  <app-dialog title="安裝到 iPhone" titleId="install-title">
+    <p>在 Safari 點選分享，再選擇「加入主畫面」，就能像 App 一樣開啟。</p>
+    <button class="primary wide" type="button" (click)="showInstallHelp.set(false)">知道了</button>
+  </app-dialog>
 }
 
 @if (updateReady()) {

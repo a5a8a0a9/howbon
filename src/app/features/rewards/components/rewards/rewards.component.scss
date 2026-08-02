@@ -7,33 +7,16 @@
   border-radius: 32px;
   background: #eee5d1;
 }
-.rewards-heading {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 40px;
-  align-items: end;
+app-page-header {
+  display: block;
   margin-bottom: 32px;
 }
-.rewards-heading > div > p,
-.panel-title small,
-.modal-kicker {
+.panel-title small {
   margin: 0;
   color: #a84f42;
   font-size: 0.7rem;
   font-weight: 900;
   letter-spacing: 0.16em;
-}
-.rewards-heading h2 {
-  margin: 8px 0 0;
-  color: #49372e;
-  font-size: clamp(2.2rem, 5vw, 3.4rem);
-  letter-spacing: -0.05em;
-}
-.rewards-heading > p {
-  max-width: 360px;
-  margin: 0;
-  color: #76645a;
-  line-height: 1.8;
 }
 .reward-grid {
   display: grid;
@@ -67,23 +50,8 @@
   color: #4d3b32;
   font-size: 1.25rem;
 }
-.panel-title strong {
+.panel-title app-ticket-balance {
   margin-left: auto;
-  color: #c75948;
-  font-size: 2rem;
-}
-.empty-small {
-  padding: 36px 10px 16px;
-  color: #8e7b70;
-  text-align: center;
-}
-.empty-small p {
-  margin: 0 0 5px;
-  color: #665248;
-  font-weight: 800;
-}
-.empty-small span {
-  font-size: 0.8rem;
 }
 .ticket-list {
   display: grid;
@@ -135,17 +103,6 @@
   grid-template-columns: 1fr 44px;
   gap: 8px;
   margin-top: 18px;
-}
-.wish-form input,
-.modal input,
-select {
-  min-width: 0;
-  border: 1px solid #d3c2b3;
-  border-radius: 11px;
-  padding: 11px 13px;
-  background: #fffdf8;
-  color: #493930;
-  font: inherit;
 }
 .wish-form button {
   display: grid;
@@ -240,66 +197,13 @@ select {
   color: #927e72;
   font-size: 0.72rem;
 }
-.modal-backdrop {
-  position: fixed;
-  z-index: 40;
-  inset: 0;
-  display: grid;
-  place-items: center;
-  padding: 22px;
-  background: rgb(54 38 31 / 62%);
-  backdrop-filter: blur(6px);
-}
-.modal {
-  width: min(430px, 100%);
-  padding: 34px;
-  border-radius: 26px;
-  background: #fffaf0;
-  color: #4b3930;
-  text-align: center;
-}
-.modal h2 {
-  margin: 0 0 18px;
-  font-size: 1.75rem;
-  letter-spacing: -0.04em;
-}
-.modal > p {
+app-dialog > p {
   color: #79675c;
   line-height: 1.65;
 }
-.modal input,
-.modal select {
+app-dialog input,
+app-dialog select {
   width: 100%;
-}
-.actions {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-  margin-top: 22px;
-}
-.actions button {
-  min-height: 46px;
-  border: 0;
-  border-radius: 12px;
-  font: inherit;
-  font-weight: 800;
-  cursor: pointer;
-}
-.primary {
-  background: #ca5948;
-  color: white;
-}
-.secondary {
-  background: #eee6d8;
-  color: #57443a;
-}
-.danger {
-  background: #a9483f;
-  color: white;
-}
-.form-error {
-  color: #a33b34 !important;
-  font-size: 0.84rem;
 }
 .ticket-icon {
   display: grid;
@@ -312,13 +216,7 @@ select {
   color: white;
   font-size: 2rem;
 }
-.redeem-modal .modal-kicker {
-  color: #a84f42;
-}
-.redeem-modal h2 {
-  margin-top: 10px;
-}
-.redeem-modal label {
+app-dialog label {
   display: block;
   margin-bottom: 8px;
   color: #725e53;
@@ -329,20 +227,9 @@ select {
   margin-bottom: 0;
   font-size: 0.78rem;
 }
-.sr-only {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-}
 @media (max-width: 800px) {
-  .rewards-heading,
   .reward-grid {
     grid-template-columns: 1fr;
-  }
-  .rewards-heading {
-    gap: 12px;
   }
 }
 @media (max-width: 520px) {
@@ -359,8 +246,5 @@ select {
   }
   .history-list time {
     grid-column: 2;
-  }
-  .modal {
-    padding: 30px 22px;
   }
 }

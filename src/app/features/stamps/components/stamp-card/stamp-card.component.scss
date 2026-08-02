@@ -32,8 +32,7 @@
   justify-content: space-between;
   gap: 20px;
 }
-.card-heading p,
-.modal-kicker {
+.card-heading p {
   margin: 0;
   color: #998174;
   font-size: 0.72rem;
@@ -139,61 +138,15 @@
   color: #8b756a;
   font-size: 0.76rem;
 }
-.modal-backdrop {
-  position: fixed;
-  z-index: 30;
-  inset: 0;
-  display: grid;
-  place-items: center;
-  padding: 22px;
-  background: rgb(54 38 31 / 62%);
-  backdrop-filter: blur(6px);
-}
-.modal {
-  position: relative;
-  width: min(440px, 100%);
-  padding: 38px;
-  border-radius: 28px;
-  background: #fffaf0;
-  box-shadow: 0 30px 80px rgb(39 24 18 / 30%);
-  color: #4b3930;
-  text-align: center;
-}
-.modal h2 {
-  margin: 12px 0 10px;
-  font-size: 2rem;
-  letter-spacing: -0.04em;
-}
-.modal > p:not(.modal-kicker, .form-error) {
+app-dialog > p:not(.form-error) {
   margin: 0 auto 22px;
   color: #79675c;
   line-height: 1.7;
 }
-.icon-close {
-  position: absolute;
-  top: 16px;
-  right: 16px;
-  display: grid;
-  place-items: center;
-  border: 0;
-  background: transparent;
-  color: #806b5f;
-  cursor: pointer;
-}
 textarea {
   width: 100%;
-  resize: vertical;
-  border: 1px solid #d3c2b3;
-  border-radius: 14px;
   padding: 14px;
-  background: #fffdf8;
-  color: #493930;
-  font: inherit;
   line-height: 1.6;
-}
-textarea:focus {
-  outline: 3px solid rgb(63 113 98 / 22%);
-  border-color: #3f7162;
 }
 .field-meta {
   display: flex;
@@ -201,38 +154,6 @@ textarea:focus {
   margin-top: 6px;
   color: #9b887c;
   font-size: 0.75rem;
-}
-.modal-actions {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-  margin-top: 20px;
-}
-.primary,
-.secondary {
-  min-height: 48px;
-  border: 0;
-  border-radius: 13px;
-  padding: 0 18px;
-  font: inherit;
-  font-weight: 800;
-  cursor: pointer;
-}
-.primary {
-  background: #ca5948;
-  color: white;
-}
-.secondary {
-  background: #eee6d8;
-  color: #57443a;
-}
-.wide {
-  width: 100%;
-}
-.form-error {
-  margin: 12px 0 0;
-  color: #aa3f37;
-  font-size: 0.84rem;
 }
 .mini-badge {
   display: grid;
@@ -260,8 +181,5 @@ textarea:focus {
   }
   .stamp-slot:nth-child(4) {
     grid-column: 2 / span 2;
-  }
-  .modal {
-    padding: 34px 22px 26px;
   }
 }

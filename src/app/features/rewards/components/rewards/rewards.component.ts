@@ -3,12 +3,23 @@ import { Component, HostListener, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ConnectivityService } from '../../../../core/connectivity/connectivity.service';
 import { MAX_WISH_NAME_LENGTH, RewardTicket, RewardWish } from '../../../../shared/models/models';
+import { AppDialogComponent } from '../../../../shared/ui/app-dialog/app-dialog.component';
+import { EmptyStateComponent } from '../../../../shared/ui/empty-state/empty-state.component';
+import { PageHeaderComponent } from '../../../../shared/ui/page-header/page-header.component';
+import { TicketBalanceComponent } from '../../../../shared/ui/ticket-balance/ticket-balance.component';
 import { TicketService } from '../../data-access/ticket.service';
 import { WishService } from '../../data-access/wish.service';
 
 @Component({
   selector: 'app-rewards',
-  imports: [DatePipe, FormsModule],
+  imports: [
+    AppDialogComponent,
+    DatePipe,
+    EmptyStateComponent,
+    FormsModule,
+    PageHeaderComponent,
+    TicketBalanceComponent,
+  ],
   templateUrl: './rewards.component.html',
   styleUrl: './rewards.component.scss',
 })

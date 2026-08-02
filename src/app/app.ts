@@ -9,6 +9,7 @@ import { LoginComponent } from './features/auth/login/login.component';
 import { RewardsComponent } from './features/rewards/components/rewards/rewards.component';
 import { StampCardComponent } from './features/stamps/components/stamp-card/stamp-card.component';
 import { StampJournalComponent } from './features/stamps/components/stamp-journal/stamp-journal.component';
+import { AppDialogComponent } from './shared/ui/app-dialog/app-dialog.component';
 
 interface BeforeInstallPromptEvent extends Event {
   prompt(): Promise<void>;
@@ -17,7 +18,13 @@ interface BeforeInstallPromptEvent extends Event {
 
 @Component({
   selector: 'app-root',
-  imports: [LoginComponent, RewardsComponent, StampCardComponent, StampJournalComponent],
+  imports: [
+    AppDialogComponent,
+    LoginComponent,
+    RewardsComponent,
+    StampCardComponent,
+    StampJournalComponent,
+  ],
   templateUrl: './app.html',
   styleUrl: './app.scss',
 })

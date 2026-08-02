@@ -42,7 +42,7 @@ describe('StampCardComponent', () => {
     expect(root.querySelector('textarea')).toBeTruthy();
     expect(addStamp).not.toHaveBeenCalled();
 
-    (root.querySelector('.modal .primary') as HTMLButtonElement).click();
+    (root.querySelector('.dialog-card .primary') as HTMLButtonElement).click();
     await fixture.whenStable();
     expect(addStamp).toHaveBeenCalledWith('');
   });
@@ -52,7 +52,7 @@ describe('StampCardComponent', () => {
     const root = fixture.nativeElement as HTMLElement;
     (root.querySelector('.stamp-button') as HTMLButtonElement).click();
     fixture.detectChanges();
-    (root.querySelector('.modal .primary') as HTMLButtonElement).click();
+    (root.querySelector('.dialog-card .primary') as HTMLButtonElement).click();
     await fixture.whenStable();
     fixture.detectChanges();
 
