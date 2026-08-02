@@ -185,9 +185,109 @@ app-dialog > p {
   font-weight: 800;
   cursor: pointer;
 }
+.confetti-layer {
+  position: fixed;
+  z-index: 70;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+.confetti {
+  --x: 48vw;
+  --r: 120deg;
+  position: absolute;
+  top: -24px;
+  left: var(--x);
+  width: 10px;
+  height: 22px;
+  border-radius: 3px;
+  background: #e5b85b;
+  animation: confetti-fall 2s ease-out both;
+}
+.confetti:nth-child(3n) {
+  background: #d96752;
+}
+.confetti:nth-child(3n + 1) {
+  background: #6e9b83;
+}
+.confetti:nth-child(2) {
+  --x: 8vw;
+  --r: 330deg;
+  animation-delay: 0.05s;
+}
+.confetti:nth-child(3) {
+  --x: 16vw;
+  --r: 180deg;
+  animation-delay: 0.2s;
+}
+.confetti:nth-child(4) {
+  --x: 25vw;
+  --r: 480deg;
+  animation-delay: 0.08s;
+}
+.confetti:nth-child(5) {
+  --x: 34vw;
+  --r: 270deg;
+  animation-delay: 0.28s;
+}
+.confetti:nth-child(6) {
+  --x: 43vw;
+  --r: 540deg;
+  animation-delay: 0.12s;
+}
+.confetti:nth-child(7) {
+  --x: 52vw;
+  --r: 250deg;
+  animation-delay: 0.02s;
+}
+.confetti:nth-child(8) {
+  --x: 61vw;
+  --r: 420deg;
+  animation-delay: 0.24s;
+}
+.confetti:nth-child(9) {
+  --x: 69vw;
+  --r: 180deg;
+  animation-delay: 0.1s;
+}
+.confetti:nth-child(10) {
+  --x: 76vw;
+  --r: 500deg;
+  animation-delay: 0.3s;
+}
+.confetti:nth-child(11) {
+  --x: 84vw;
+  --r: 330deg;
+  animation-delay: 0.15s;
+}
+.confetti:nth-child(12) {
+  --x: 91vw;
+  --r: 600deg;
+  animation-delay: 0.05s;
+}
+.confetti:nth-child(13) {
+  --x: 57vw;
+  --r: 290deg;
+  animation-delay: 0.35s;
+}
+.confetti:nth-child(14) {
+  --x: 29vw;
+  --r: 460deg;
+  animation-delay: 0.32s;
+}
 @keyframes breathe {
   to {
     transform: scale(1.08) rotate(4deg);
+  }
+}
+@keyframes confetti-fall {
+  to {
+    transform: translateY(calc(100vh + 48px)) rotate(var(--r));
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .confetti-layer {
+    display: none;
   }
 }
 @media (max-width: 580px) {

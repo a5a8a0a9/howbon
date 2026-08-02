@@ -87,6 +87,10 @@ describe('App', () => {
     expect(compiled.querySelector('.badge-copy')?.getAttribute('aria-label')).toBe(
       '已收藏 3 枚徽章',
     );
+
+    compiled.querySelector('.brand')?.dispatchEvent(new Event('pointerup'));
+    fixture.detectChanges();
+    expect(compiled.querySelectorAll('.confetti')).toHaveLength(14);
   });
 
   it('blocks the application while a global action is running', async () => {

@@ -64,6 +64,8 @@ body {
   min-width: 320px;
   min-height: 100dvh;
   margin: 0;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 button,
@@ -96,6 +98,13 @@ select {
   padding: 11px 13px;
   background: #fffdf8;
   color: #493930;
+}
+
+input,
+textarea,
+[contenteditable='true'] {
+  -webkit-user-select: text;
+  user-select: text;
 }
 
 textarea {

@@ -13,6 +13,7 @@ import {
 } from '@angular/router';
 import { filter } from 'rxjs';
 import { AuthService } from './core/auth/auth.service';
+import { CelebrationService } from './core/celebration/celebration.service';
 import { ConnectivityService } from './core/connectivity/connectivity.service';
 import { LoadingService } from './core/loading/loading.service';
 import { LoginComponent } from './features/auth/login/login.component';
@@ -44,6 +45,7 @@ export class App {
   private readonly swUpdate = inject(SwUpdate);
   private readonly router = inject(Router);
   protected readonly auth = inject(AuthService);
+  protected readonly celebration = inject(CelebrationService);
   protected readonly connectivity = inject(ConnectivityService);
   protected readonly loading = inject(LoadingService);
   protected readonly updateReady = signal(false);

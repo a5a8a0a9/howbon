@@ -1,7 +1,17 @@
 <section class="hero" aria-labelledby="home-title">
   <div class="hero-copy">
     <p class="eyebrow"><span></span> 日日都值得被肯定</p>
-    <h1 id="home-title">今天也要<br /><em>好棒棒！</em></h1>
+    <h1 id="home-title">
+      <button
+        class="title-celebration-trigger"
+        type="button"
+        (pointerup)="celebrate()"
+        (keydown.enter)="celebrate()"
+        (keydown.space)="$event.preventDefault(); celebrate()"
+      >
+        今天也要<br /><em>好棒棒！</em>
+      </button>
+    </h1>
     <p class="intro">
       每完成一件值得開心的小事，就替自己蓋一個章。集滿五個，收下一枚專屬徽章和一張獎賞票券。
     </p>
@@ -20,7 +30,15 @@
     <p>每五個印章，就會變成一枚記得住的成就。</p>
   </div>
 
-  <div class="badge-showcase">
+  <div
+    class="badge-showcase"
+    role="button"
+    tabindex="0"
+    aria-label="已收藏的徽章，點擊播放彩帶效果"
+    (pointerup)="celebrate()"
+    (keydown.enter)="celebrate()"
+    (keydown.space)="$event.preventDefault(); celebrate()"
+  >
     <div class="badge-art" [class.is-empty]="stamps.badgeCount() === 0" aria-hidden="true">
       <span class="badge-inner"><b>好棒</b><small>GOOD JOB!</small></span>
       <span class="ribbon ribbon-left"></span>
