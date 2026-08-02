@@ -16,9 +16,21 @@ function swUpdateStub() {
 
 describe('App', () => {
   it('renders the login gate while signed out', async () => {
+    const authStub = {
+      configured: true,
+      authReady: signal(true),
+      isSigningIn: signal(false),
+      error: signal<string | null>(null),
+      user: signal(null),
+      signInWithGoogle: vi.fn(),
+      signOut: vi.fn(),
+    };
     await TestBed.configureTestingModule({
       imports: [App],
-      providers: [{ provide: SwUpdate, useValue: swUpdateStub() }],
+      providers: [
+        { provide: SwUpdate, useValue: swUpdateStub() },
+        { provide: AuthService, useValue: authStub },
+      ],
     }).compileComponents();
 
     const fixture = TestBed.createComponent(App);
@@ -27,7 +39,7 @@ describe('App', () => {
 
     expect(compiled.querySelector('h1')?.textContent).toContain('今天也要');
     expect(compiled.querySelector('.stamp-button')).toBeNull();
-    expect(compiled.textContent).toContain('還差一小步');
+    expect(compiled.textContent).toContain('使用 Google 帳號登入');
   });
 
   it('renders the cloud dashboard for a signed-in user', async () => {

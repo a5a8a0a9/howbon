@@ -1,48 +1,67 @@
-# 好棒棒集章：雲端帳號與獎賞願望清單規格
+# 好棒棒集章：分頁、票券商店與雲端資料規格
 
 ## 1. 產品目標
 
-將「好棒棒集章」從單一瀏覽器的本機集章工具，升級為使用 Google 帳號登入、可跨裝置同步的個人成長日誌。使用者每次蓋章可留下選填留言；每五枚章會獲得一枚徽章與一張獎賞票券。使用者可以預先維護願望清單，並在兌換票券時選擇願望或自由兌換。
+「好棒棒集章」是使用 Google 帳號登入、可跨裝置同步的個人成長日誌。使用者每次蓋章可留下選填留言；每五枚章會獲得一枚徽章與一張票券。票券是商店貨幣，可購買使用者自行建立的商品，購買結果會進入獎賞道具庫。
 
-本版本不包含：既有 `localStorage` 資料搬移、公開個人頁、社群排名、管理員、陪伴者共同給章、刪除蓋章、恢復已兌換票券、票券價格或願望庫存。
+本版本不包含：舊 `localStorage` 搬移、公開個人頁、社群排名、管理員、共同給章、刪除蓋章、恢復已消耗票券、商品自訂價格、道具使用或消耗。
 
-## 2. 使用者流程
+## 2. 導覽與頁面
 
-### 2.1 登入與登出
+登入後顯示固定底部導覽，所有 viewport 均使用同一模式：
 
-1. 應用程式啟動時等待 Firebase Authentication 恢復登入狀態。
+- `/home`：品牌 hero、集章卡、蓋章留言、目前章數與徽章數。
+- `/journal`：以月份為單位瀏覽與編輯蓋章留言。
+- `/rewards`：可用票券數與已購買的道具庫存。
+- `/store`：可用票券數、商品新增、改名、刪除與購買。
+
+空路徑與未知路徑導向 `/home`；頁面以 Angular Router lazy loading 載入。未登入時保留目前 URL，但只顯示登入畫面。
+
+## 3. 核心流程
+
+### 3.1 登入與登出
+
+1. 啟動時等待 Firebase Authentication 恢復登入狀態。
 2. 未登入時只顯示產品說明、資料使用提示與 Google 登入按鈕。
 3. 使用者主動點擊後，以 Google popup 完成登入。
 4. popup 取消或失敗時留在登入畫面並顯示可重試錯誤。
-5. 登入後顯示使用者名稱、頭像與登出操作。
+5. 登入後顯示帳號、App shell、當前 route 與底部導覽。
 6. 登出不刪除任何雲端資料。
 
-### 2.2 蓋章與留言
+### 3.2 蓋章與留言
 
-1. 點擊「蓋一個好棒章」後開啟留言視窗。
-2. 留言選填；取消不產生蓋章，確認才送出 Firestore transaction。
-3. 第 1 至第 4 枚章新增紀錄並累加目前章數。
-4. 第 5 枚章在同一 transaction 中新增紀錄、將目前章數歸零、徽章數加一，並建立一張可用票券。
-5. transaction 成功後才播放蓋章或徽章解鎖動畫；失敗時保留輸入並允許重試。
-6. 留言可事後修改或清空，但蓋章紀錄及建立時間不可刪除或修改。
+1. 點擊蓋章後開啟選填留言 dialog；取消不產生紀錄。
+2. 第 1 至 4 枚章新增紀錄並累加目前章數。
+3. 第 5 枚章在同一 transaction 中新增紀錄、目前章數歸零、徽章數加一並建立可用票券。
+4. transaction 成功後才播放成功動畫；失敗時保留輸入並允許重試。
+5. 留言可修改或清空，蓋章紀錄及建立時間不可刪除或修改。
 
-### 2.3 願望清單
+### 3.3 月份日誌
 
-1. 願望只有必填名稱，可新增、改名與刪除。
-2. 願望可被不同票券重複選擇，兌換後仍保留在清單。
-3. 刪除願望前需要確認；刪除不影響既有兌換紀錄。
-4. 空清單不阻止自由兌換票券。
+1. 預設顯示裝置本地時區的當月。
+2. 左右按鈕切換月份；當月時停用下一個月，不顯示未來資料。
+3. 查詢範圍為 `createdAt >= 月初` 且 `createdAt < 下月月初`。
+4. 切月時解除舊 listener 再訂閱新月份；沒有紀錄時顯示空狀態。
+5. 編輯按鈕只顯示 icon，置於日期列右上角並提供完整 accessible name。
 
-### 2.4 票券兌換
+### 3.4 商店與購買
 
-1. 徽章解鎖時直接建立 `available` 票券，不要求輸入獎賞。
-2. 兌換時可選擇願望，或不指定願望直接自由兌換。
-3. 選擇願望時，在 transaction 中確認願望仍存在，並保存願望 ID 與當下名稱快照。
-4. 自由兌換時，願望 ID 與獎賞名稱快照均為 `null`。
-5. 成功後票券改為 `redeemed` 並保存伺服器兌換時間。
-6. 已兌換票券永久唯讀，不可恢復、改選願望或再次使用。
+1. 商品名稱必填，可新增、改名、刪除及重複購買。
+2. 商品資料保留 `price`，目前固定為 `1` 且不出現在 UI。
+3. 購買前確認至少持有一張 available ticket，再顯示確認 dialog。
+4. transaction 重新讀取商品與指定票券，確認商品存在、價格為 1、票券仍可用。
+5. 成功時將票券改為 redeemed，並建立 purchase，保存商品 ID、名稱快照、價格、ticket ID 與購買時間。
+6. 商品被其他裝置刪除、票券已被使用、離線或 transaction 失敗時不得建立 purchase。
+7. 商店是唯一消耗票券的入口，不提供自由兌換。
 
-## 3. Firestore 資料模型
+### 3.5 獎賞道具
+
+1. 獎賞頁只讀取新 `purchases`，不讀取舊願望兌換紀錄。
+2. 依 `storeItemId` 合併購買紀錄，顯示最近一次購買的名稱快照與數量。
+3. 商品改名後再次購買仍合併至同一商品；商品刪除不影響庫存。
+4. 道具目前只展示，不提供使用、消耗或刪除。
+
+## 4. Firestore 資料模型
 
 ### `users/{uid}`
 
@@ -66,73 +85,72 @@
 
 ### `users/{uid}/tickets/{ticketId}`
 
-| 欄位                 | 型別                      | 說明                    |
-| -------------------- | ------------------------- | ----------------------- |
-| `badgeOrdinal`       | number                    | 對應徽章序號，從 1 開始 |
-| `status`             | `available` \| `redeemed` | 票券狀態                |
-| `wishId`             | string \| null            | 兌換時選擇的願望        |
-| `rewardNameSnapshot` | string \| null            | 兌換時的願望名稱快照    |
-| `createdAt`          | timestamp                 | 票券建立時間            |
-| `redeemedAt`         | timestamp \| null         | 兌換時間                |
+沿用既有 ticket schema，讓舊 available tickets 可以繼續使用：
 
-票券文件 ID 固定使用 `badge-{badgeOrdinal}`，避免 transaction 重試建立重複票券。
+| 欄位                 | 型別                      | 說明                              |
+| -------------------- | ------------------------- | --------------------------------- |
+| `badgeOrdinal`       | number                    | 對應徽章序號                      |
+| `status`             | `available` \| `redeemed` | 票券狀態                          |
+| `wishId`             | string \| null            | 舊版相容欄位；商店購買固定為 null |
+| `rewardNameSnapshot` | string \| null            | 舊版相容欄位；商店購買固定為 null |
+| `createdAt`          | timestamp                 | 建立時間                          |
+| `redeemedAt`         | timestamp \| null         | 消耗時間                          |
 
-### `users/{uid}/wishes/{wishId}`
+### `users/{uid}/storeItems/{storeItemId}`
 
-| 欄位        | 型別      | 說明                   |
-| ----------- | --------- | ---------------------- |
-| `name`      | string    | 必填名稱，最多 80 字元 |
-| `createdAt` | timestamp | 建立時間               |
-| `updatedAt` | timestamp | 最後修改時間           |
+| 欄位        | 型別      | 說明               |
+| ----------- | --------- | ------------------ |
+| `name`      | string    | 必填，最多 80 字元 |
+| `price`     | number    | 本版本固定為整數 1 |
+| `createdAt` | timestamp | 建立時間           |
+| `updatedAt` | timestamp | 最後修改時間       |
 
-## 4. 權限與交易邊界
+### `users/{uid}/purchases/{purchaseId}`
 
-- Firestore Rules 僅允許已登入且 `request.auth.uid == uid` 的使用者讀寫自己的文件。
-- Rules 限制允許欄位、必要欄位、型別、字串長度與不可變欄位。
-- 新增蓋章、更新進度及第五章建立票券必須在同一 transaction 中完成。
-- 兌換票券及讀取所選願望名稱必須在同一 transaction 中完成。
-- 本產品是個人自我鼓勵工具；安全規則負責帳號隔離與資料格式，不提供伺服器端反作弊。
+| 欄位           | 型別      | 說明                               |
+| -------------- | --------- | ---------------------------------- |
+| `storeItemId`  | string    | 購買時的商品 ID                    |
+| `nameSnapshot` | string    | 購買時名稱快照                     |
+| `price`        | number    | 本版本固定為 1                     |
+| `ticketIds`    | string[]  | 本版本長度固定為 1，預留多票券價格 |
+| `purchasedAt`  | timestamp | 購買時間                           |
 
-## 5. 離線、跨裝置與錯誤
+既有 `wishes` collection 與舊 redeemed tickets 不搬移、不刪除，新 UI 完全忽略；舊 available tickets 繼續作為餘額。
 
-- 啟用 Firestore persistent multi-tab cache，讓登入過的裝置離線查看最近同步資料。
-- 離線時禁止蓋章、編輯留言、願望管理與票券兌換，並顯示離線提示。
-- transaction 失敗時不得先行播放成功動畫或清空表單。
-- 寫入失敗時保留使用者輸入，提供清楚錯誤與重試方式。
-- 多裝置同時蓋第五章時，由 transaction 重試確保徽章序號及票券唯一。
-- 兌換時若願望已被其他裝置刪除，拒絕該次兌換並要求重選或改為自由兌換。
+## 5. 權限與交易邊界
 
-## 6. UI 與無障礙
+- Firestore Rules 只允許已登入且 `request.auth.uid == uid` 的使用者存取自己的路徑。
+- Store item 建立時 `price == 1`，更新時價格及建立時間不可修改。
+- Purchase 只能建立，不能更新或刪除；必須與 available → redeemed ticket 更新發生於同一 transaction。
+- Purchase 的商品名稱、價格必須等於 transaction 中讀取的 store item；ticketIds 目前只能包含一張票券。
+- 新增蓋章、更新進度及第五章建立票券仍必須在同一 transaction 中完成。
 
-- 主畫面包含：帳號區、集章卡、集章日誌、我的票券、願望清單、兌換紀錄。
-- 所有 modal 具備適當的 dialog role、標題、Escape 關閉、初始焦點及鍵盤操作。
-- Material Symbols Rounded icon 為裝飾用途時設為 `aria-hidden`；按鈕仍需可見文字或 `aria-label`。
-- 保留 `prefers-reduced-motion` 支援、手機優先響應式版面與 PWA 更新提示。
-- 移除重設進度按鈕及相關確認視窗。
+## 6. Loading、離線與錯誤
 
-## 7. 環境與發布
+- 全域 `LoadingService` 以 reference count 管理並行動作，支援 `begin/end` 與 `run`。
+- 登入、登出、路由切換、蓋章、留言修改、商品 CRUD 與購買均顯示滿版 Loading mask。
+- Loading 時主要內容設為 inert 與 aria-busy，阻擋滑鼠、觸控及鍵盤操作；所有動作以 finally 保證解除。
+- Firestore snapshot 初次載入使用頁面／區塊 loading，不使用滿版 mask。
+- 啟用 persistent multi-tab cache；離線可查看快取，但所有寫入操作停用。
+- 錯誤時保留表單輸入，顯示可理解訊息並允許重試。
 
-- Firebase Console：建立 Web App、啟用 Google provider、建立 Native mode Firestore，台灣使用者採 `asia-east1`。
-- Authorized domains：`localhost`、`howbon.young-app.com`，以及實際使用的 GitHub Pages 網域。
-- 前端使用 Firebase modular SDK；Firebase Web config 可放在 Angular environment，禁止加入 Admin SDK 私鑰。
-- 使用 Firebase CLI、JDK 21 與 Local Emulator Suite 測試 Firestore Rules。
-- 網站維持 GitHub Pages 部署；Firestore Rules 與 indexes 由 Firebase CLI 發布。
-- Material Symbols Rounded 字型自行託管於 PWA assets。
+## 7. UI、架構與無障礙
+
+- 專案採 core/shared/features 架構；stamps feature 擁有首頁與日誌，rewards feature 擁有獎賞與商店。
+- 所有 Component 使用同名 `.ts`、`.html`、`.scss`，不使用 inline template/style 或 CSS。
+- 共用 dialog、page header、empty state、ticket balance、loading mask、bottom nav；按鈕、表單、卡片與 icon button 樣式集中於全域 SCSS。
+- Bottom nav 固定底部並支援 `safe-area-inset-bottom`；內容保留足夠底部空間。
+- Material Symbols 為裝飾時設 `aria-hidden`；icon-only 按鈕具備 `aria-label`。
+- 保留 focus-visible、reduced-motion、手機優先響應式與 PWA 安裝／更新提示。
 
 ## 8. 驗收與測試
 
-- 登入成功、取消 popup、登入失敗、登出與重載後恢復登入。
-- 第 1 至 4 章累加；第 5 章只產生一枚徽章與一張票券。
-- transaction 重試與雙裝置操作不會建立重複票券。
-- 留言可留白、建立、修改與清空，不能修改章數或建立時間。
-- 願望可建立、改名、刪除，且可被多張票券重複使用。
-- 自由兌換顯示「自由兌換」；指定願望兌換保存名稱快照。
-- 願望改名或刪除後，舊兌換紀錄仍顯示原始名稱。
-- 已兌換票券不能再次使用。
-- 未登入、跨帳號與非法資料均被 Firestore Rules 拒絕。
-- 離線可閱讀快取，所有寫入操作停用，恢復連線後可操作。
-- 通過 Angular 單元測試、Rules emulator 測試、production build 與 bundle budget。
-
-## 9. 既有資料
-
-舊的 `howbon.stamp-progress.v1` 不讀取、不搬移、不上傳，也不主動刪除；更新後每個 Google 帳號從新的 Firestore 個人資料開始。
+- 四條 lazy routes、深連結、上一頁／下一頁、未知路徑與登入門檻正確。
+- Loading 單一與並行動作、成功與失敗都能正確顯示及解除。
+- 日誌預設當月、跨月、跨年、未來月份停用、本地時區邊界與 listener cleanup 正確。
+- 商品 CRUD 固定保存 price 1，UI 不顯示價格。
+- 餘額不足、離線、商品被刪除、票券競爭時購買失敗且不產生 purchase。
+- 成功購買只消耗一張票券並建立一筆 purchase。
+- Inventory 依 storeItemId 合併，保留商品刪除／改名後的快照與數量。
+- Rules 拒絕未登入、跨帳號、非法價格、任意 purchase、重複票券與修改購買紀錄。
+- 通過 Prettier、Angular tests、Rules Emulator、production build、production audit 與桌面／390px 視覺檢查。
