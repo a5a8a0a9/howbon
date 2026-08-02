@@ -16,7 +16,7 @@
 - `/store`：商品新增、改名、刪除與購買。
 
 空路徑與未知路徑導向 `/home`；頁面以 Angular Router lazy loading 載入。未登入時保留目前 URL，但只顯示登入畫面。
-登入後的 site header 以只有票券 icon 與數字的 pill 顯示全站可用票券數量。
+商店頁的標題區以只有票券 icon 與數字的 pill 顯示可用票券數量；全站 site header 不顯示票券。
 
 ## 3. 核心流程
 

@@ -16,7 +16,6 @@ import { AuthService } from './core/auth/auth.service';
 import { ConnectivityService } from './core/connectivity/connectivity.service';
 import { LoadingService } from './core/loading/loading.service';
 import { LoginComponent } from './features/auth/login/login.component';
-import { TicketService } from './features/rewards/data-access/ticket.service';
 import { AppDialogComponent } from './shared/ui/app-dialog/app-dialog.component';
 import { BottomNavComponent } from './shared/ui/bottom-nav/bottom-nav.component';
 import { LoadingMaskComponent } from './shared/ui/loading-mask/loading-mask.component';
@@ -47,7 +46,6 @@ export class App {
   protected readonly auth = inject(AuthService);
   protected readonly connectivity = inject(ConnectivityService);
   protected readonly loading = inject(LoadingService);
-  protected readonly tickets = inject(TicketService);
   protected readonly updateReady = signal(false);
   protected readonly installPrompt = signal<BeforeInstallPromptEvent | null>(null);
   protected readonly isInstalled = signal(this.isStandalone());

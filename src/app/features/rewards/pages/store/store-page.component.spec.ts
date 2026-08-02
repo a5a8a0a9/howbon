@@ -43,6 +43,9 @@ describe('StorePageComponent', () => {
     const itemCard = root.querySelector('.item-card')!;
 
     expect(root.querySelector('.ticket-balance')).toBeNull();
+    expect(root.querySelector('.store-ticket-pill')?.getAttribute('aria-label')).toBe(
+      '可用票券 2 張',
+    );
     expect(root.querySelector('.description')).toBeNull();
     expect(root.querySelector('.meta')?.textContent).toContain('1 項商品');
     expect(itemCard.textContent).toContain('看一場電影');

@@ -1,10 +1,20 @@
 <section class="store-page" aria-labelledby="store-title">
-  <app-page-header
-    eyebrow="TICKET STORE"
-    title="商店"
-    titleId="store-title"
-    [meta]="store.items().length + ' 項商品'"
-  />
+  <div class="store-heading">
+    <app-page-header
+      eyebrow="TICKET STORE"
+      title="商店"
+      titleId="store-title"
+      [meta]="store.items().length + ' 項商品'"
+    />
+    <div
+      class="store-ticket-pill"
+      [attr.aria-label]="'可用票券 ' + tickets.availableCount() + ' 張'"
+      title="可用票券"
+    >
+      <span class="material-symbols-rounded" aria-hidden="true">confirmation_number</span>
+      <strong>{{ tickets.availableCount() }}</strong>
+    </div>
+  </div>
 
   <form class="item-form" (ngSubmit)="createItem()">
     <label class="sr-only" for="new-item">新增商品</label>

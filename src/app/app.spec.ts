@@ -8,7 +8,6 @@ import { App } from './app';
 import { routes } from './app.routes';
 import { AuthService } from './core/auth/auth.service';
 import { LoadingService } from './core/loading/loading.service';
-import { TicketService } from './features/rewards/data-access/ticket.service';
 import { StampService } from './features/stamps/data-access/stamp.service';
 
 function swUpdateStub() {
@@ -35,7 +34,6 @@ describe('App', () => {
       providers: [
         { provide: SwUpdate, useValue: swUpdateStub() },
         { provide: AuthService, useValue: authStub },
-        { provide: TicketService, useValue: { availableCount: signal(0) } },
         provideRouter(routes),
       ],
     }).compileComponents();
@@ -71,7 +69,6 @@ describe('App', () => {
         { provide: SwUpdate, useValue: swUpdateStub() },
         { provide: AuthService, useValue: authStub },
         { provide: StampService, useValue: stampStub },
-        { provide: TicketService, useValue: { availableCount: signal(2) } },
         provideRouter(routes),
       ],
     }).compileComponents();
@@ -83,9 +80,7 @@ describe('App', () => {
     const compiled = fixture.nativeElement as HTMLElement;
 
     expect(compiled.querySelector('.account-chip')?.textContent).toContain('小明');
-    expect(compiled.querySelector('.header-ticket-pill')?.getAttribute('aria-label')).toBe(
-      '可用票券 2 張',
-    );
+    expect(compiled.querySelector('.header-ticket-pill')).toBeNull();
     expect(compiled.querySelector('.stamp-button')).toBeTruthy();
     expect(TestBed.inject(Router).url).toBe('/home');
     expect(compiled.querySelector('.bottom-nav a.active')?.textContent).toContain('首頁');
@@ -109,7 +104,6 @@ describe('App', () => {
       providers: [
         { provide: SwUpdate, useValue: swUpdateStub() },
         { provide: AuthService, useValue: authStub },
-        { provide: TicketService, useValue: { availableCount: signal(0) } },
         provideRouter(routes),
       ],
     }).compileComponents();
