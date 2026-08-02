@@ -101,8 +101,7 @@
   font-family: inherit;
   font-size: clamp(0.64rem, 1.5vw, 0.84rem);
 }
-.progress-copy,
-.badge-total {
+.progress-copy {
   margin: 0;
   color: #77645a;
   font-size: 0.88rem;
@@ -132,11 +131,6 @@
   opacity: 0.55;
   box-shadow: 0 4px 0 #9d4035;
   cursor: not-allowed;
-}
-.badge-total {
-  margin-top: 18px;
-  color: #8b756a;
-  font-size: 0.76rem;
 }
 app-dialog > p:not(.form-error) {
   margin: 0 auto 22px;

@@ -11,6 +11,11 @@
   padding: 56px 0 44px;
 }
 
+.hero-copy {
+  position: relative;
+  padding-left: 6px;
+}
+
 .eyebrow {
   display: flex;
   align-items: center;
@@ -36,16 +41,187 @@ h1 {
   letter-spacing: -0.07em;
 
   em {
+    position: relative;
+    display: inline-block;
     color: #c95847;
     font-style: normal;
+    transform: rotate(-2deg);
+
+    &::after {
+      content: '';
+      position: absolute;
+      right: 4px;
+      bottom: -9px;
+      left: 16px;
+      height: 8px;
+      border-top: 3px solid #d98b65;
+      border-radius: 50%;
+      transform: rotate(1deg);
+    }
   }
 }
 
-.hero-copy > p:last-child {
+.intro {
   max-width: 410px;
   margin: 0;
   color: #69574d;
   line-height: 1.9;
+}
+
+.tiny-note {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: max-content;
+  margin: 44px 0 0 auto;
+  color: #65796e;
+  font-size: 0.86rem;
+  font-weight: 700;
+  transform: rotate(-5deg);
+}
+
+.note-arrow {
+  font-size: 1.5rem;
+}
+
+.collection {
+  display: grid;
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+  align-items: center;
+  gap: clamp(42px, 9vw, 120px);
+  padding-block: 86px 96px;
+  border-top: 1px solid rgb(91 70 55 / 20%);
+}
+
+.section-kicker {
+  margin: 0;
+  color: #a84f42;
+  font-size: 0.74rem;
+  font-weight: 900;
+  letter-spacing: 0.2em;
+}
+
+.collection-copy {
+  h2 {
+    margin: 10px 0 18px;
+    color: #47362e;
+    font-size: clamp(2rem, 4vw, 3.1rem);
+    letter-spacing: -0.05em;
+  }
+
+  > p:last-child {
+    max-width: 350px;
+    margin: 0;
+    color: #78675d;
+    line-height: 1.8;
+  }
+}
+
+.badge-showcase {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(30px, 6vw, 72px);
+  min-height: 270px;
+  padding: 34px;
+  border-radius: 90px 24px 80px 30px;
+  background: rgb(226 218 190 / 48%);
+}
+
+.badge-art {
+  position: relative;
+  display: grid;
+  flex: 0 0 170px;
+  place-items: center;
+  width: 170px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: #d66a53;
+  box-shadow:
+    0 13px 24px rgb(93 61 43 / 18%),
+    inset 0 0 0 8px #efd48d,
+    inset 0 0 0 13px #b54b3e;
+  transform: rotate(-6deg);
+  transition:
+    filter 250ms ease,
+    opacity 250ms ease;
+
+  &.is-empty {
+    filter: grayscale(0.85);
+    opacity: 0.38;
+  }
+}
+
+.badge-inner {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #fff6d7;
+  text-align: center;
+
+  b {
+    font-size: 2.1rem;
+    letter-spacing: 0.08em;
+  }
+
+  small {
+    margin-top: 5px;
+    font-size: 0.62rem;
+    font-weight: 900;
+    letter-spacing: 0.16em;
+  }
+}
+
+.ribbon {
+  position: absolute;
+  z-index: -1;
+  bottom: -44px;
+  width: 46px;
+  height: 82px;
+  background: #668e79;
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 80%, 0 100%);
+}
+
+.ribbon-left {
+  left: 37px;
+  transform: rotate(10deg);
+}
+
+.ribbon-right {
+  right: 37px;
+  transform: rotate(-10deg);
+}
+
+.badge-copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+
+  > span {
+    color: #8a776a;
+    font-size: 0.82rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+  }
+
+  strong {
+    margin-block: 4px;
+    color: #47362e;
+    font-size: 4.3rem;
+    line-height: 1;
+
+    small {
+      font-size: 1rem;
+    }
+  }
+
+  p {
+    margin: 8px 0 0;
+    color: #756359;
+    font-size: 0.84rem;
+  }
 }
 
 @media (max-width: 900px) {
@@ -59,10 +235,43 @@ h1 {
   .hero-copy {
     max-width: 620px;
   }
+
+  .intro {
+    max-width: 530px;
+  }
+
+  .tiny-note {
+    margin: 30px 20% 0 auto;
+  }
+
+  .collection {
+    grid-template-columns: 1fr;
+    gap: 38px;
+  }
 }
 
 @media (max-width: 580px) {
   h1 {
     font-size: clamp(3.4rem, 18vw, 5rem);
+  }
+
+  .tiny-note {
+    margin-top: 28px;
+  }
+
+  .collection {
+    padding-block: 64px 74px;
+  }
+
+  .badge-showcase {
+    flex-direction: column;
+    gap: 58px;
+    padding: 46px 24px 34px;
+    border-radius: 60px 22px 50px 24px;
+  }
+
+  .badge-copy {
+    align-items: center;
+    text-align: center;
   }
 }

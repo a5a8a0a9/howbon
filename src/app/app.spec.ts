@@ -83,7 +83,9 @@ describe('App', () => {
     expect(compiled.querySelector('.stamp-button')).toBeTruthy();
     expect(TestBed.inject(Router).url).toBe('/home');
     expect(compiled.querySelector('.bottom-nav a.active')?.textContent).toContain('首頁');
-    expect(compiled.textContent).toContain('已收藏 3 枚徽章');
+    expect(compiled.querySelector('.badge-copy')?.getAttribute('aria-label')).toBe(
+      '已收藏 3 枚徽章',
+    );
   });
 
   it('blocks the application while a global action is running', async () => {
