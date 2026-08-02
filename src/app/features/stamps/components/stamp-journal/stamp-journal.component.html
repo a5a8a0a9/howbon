@@ -68,7 +68,7 @@
 </section>
 
 @if (editingStamp()) {
-  <app-dialog title="編輯這次的留言" titleId="edit-note-title" (dismissed)="closeEdit()">
+  <app-dialog title="編輯留言" titleId="edit-note-title" (dismissed)="closeEdit()">
     <textarea [(ngModel)]="editNote" [maxLength]="maxNoteLength" rows="5"></textarea>
     <small>{{ editNote.length }} / {{ maxNoteLength }}；清空後仍會保留蓋章。</small>
     @if (editError()) {
@@ -79,7 +79,7 @@
         取消
       </button>
       <button class="primary" type="button" [disabled]="saving()" (click)="saveEdit()">
-        {{ saving() ? '儲存中…' : '儲存留言' }}
+        {{ saving() ? '儲存中…' : '儲存' }}
       </button>
     </div>
   </app-dialog>
