@@ -1,11 +1,14 @@
 import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { SwUpdate } from '@angular/service-worker';
+import { provideRouter, Router } from '@angular/router';
 import { EMPTY } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 import { App } from './app';
+import { routes } from './app.routes';
 import { AuthService } from './core/auth/auth.service';
 import { LoadingService } from './core/loading/loading.service';
+import { StampService } from './features/stamps/data-access/stamp.service';
 
 function swUpdateStub() {
   return {
@@ -31,6 +34,7 @@ describe('App', () => {
       providers: [
         { provide: SwUpdate, useValue: swUpdateStub() },
         { provide: AuthService, useValue: authStub },
+        provideRouter(routes),
       ],
     }).compileComponents();
 
@@ -53,21 +57,33 @@ describe('App', () => {
       signInWithGoogle: vi.fn(),
       signOut: vi.fn(),
     };
+    const stampStub = {
+      currentStampCount: signal(0),
+      badgeCount: signal(3),
+      saving: signal(false),
+      addStamp: vi.fn(),
+    };
     await TestBed.configureTestingModule({
       imports: [App],
       providers: [
         { provide: SwUpdate, useValue: swUpdateStub() },
         { provide: AuthService, useValue: authStub },
+        { provide: StampService, useValue: stampStub },
+        provideRouter(routes),
       ],
     }).compileComponents();
 
     const fixture = TestBed.createComponent(App);
+    await TestBed.inject(Router).navigateByUrl('/not-a-page');
+    await fixture.whenStable();
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
 
     expect(compiled.querySelector('.account-chip')?.textContent).toContain('小明');
     expect(compiled.querySelector('.stamp-button')).toBeTruthy();
-    expect(compiled.textContent).toContain('獎賞願望清單');
+    expect(TestBed.inject(Router).url).toBe('/home');
+    expect(compiled.querySelector('.bottom-nav a.active')?.textContent).toContain('首頁');
+    expect(compiled.textContent).toContain('已收藏 3 枚徽章');
   });
 
   it('blocks the application while a global action is running', async () => {
@@ -85,6 +101,7 @@ describe('App', () => {
       providers: [
         { provide: SwUpdate, useValue: swUpdateStub() },
         { provide: AuthService, useValue: authStub },
+        provideRouter(routes),
       ],
     }).compileComponents();
 

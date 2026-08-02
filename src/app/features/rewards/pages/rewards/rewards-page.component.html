@@ -1,0 +1,34 @@
+<section class="page-card" aria-labelledby="rewards-page-title">
+  <app-page-header
+    eyebrow="MY REWARDS"
+    title="我的獎賞"
+    titleId="rewards-page-title"
+    description="看看目前持有的票券，以及已經兌換過的獎賞。"
+  />
+
+  <app-ticket-balance [count]="tickets.availableTickets().length" />
+
+  <section class="history" aria-labelledby="rewards-history-title">
+    <h2 id="rewards-history-title">兌換紀錄</h2>
+    @if (tickets.redeemedTickets().length === 0) {
+      <app-empty-state
+        icon="redeem"
+        title="還沒有兌換紀錄"
+        description="票券不會過期，等最想使用的時候再用。"
+      />
+    } @else {
+      <div class="history-list">
+        @for (ticket of tickets.redeemedTickets(); track ticket.id) {
+          <article>
+            <span class="material-symbols-rounded" aria-hidden="true">check_circle</span>
+            <div>
+              <strong>{{ ticket.rewardNameSnapshot || '自由兌換' }}</strong>
+              <small>徽章 #{{ ticket.badgeOrdinal }}</small>
+            </div>
+            <time>{{ ticket.redeemedAt | date: 'yyyy/MM/dd' }}</time>
+          </article>
+        }
+      </div>
+    }
+  </section>
+</section>

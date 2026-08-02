@@ -2,15 +2,22 @@ import { DOCUMENT } from '@angular/common';
 import { Component, DestroyRef, HostListener, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { SwUpdate, VersionReadyEvent } from '@angular/service-worker';
+import {
+  NavigationCancel,
+  NavigationEnd,
+  NavigationError,
+  NavigationStart,
+  Router,
+  RouterLink,
+  RouterOutlet,
+} from '@angular/router';
 import { filter } from 'rxjs';
 import { AuthService } from './core/auth/auth.service';
 import { ConnectivityService } from './core/connectivity/connectivity.service';
 import { LoadingService } from './core/loading/loading.service';
 import { LoginComponent } from './features/auth/login/login.component';
-import { RewardsComponent } from './features/rewards/components/rewards/rewards.component';
-import { StampCardComponent } from './features/stamps/components/stamp-card/stamp-card.component';
-import { StampJournalComponent } from './features/stamps/components/stamp-journal/stamp-journal.component';
 import { AppDialogComponent } from './shared/ui/app-dialog/app-dialog.component';
+import { BottomNavComponent } from './shared/ui/bottom-nav/bottom-nav.component';
 import { LoadingMaskComponent } from './shared/ui/loading-mask/loading-mask.component';
 
 interface BeforeInstallPromptEvent extends Event {
@@ -22,11 +29,11 @@ interface BeforeInstallPromptEvent extends Event {
   selector: 'app-root',
   imports: [
     AppDialogComponent,
+    BottomNavComponent,
     LoginComponent,
     LoadingMaskComponent,
-    RewardsComponent,
-    StampCardComponent,
-    StampJournalComponent,
+    RouterLink,
+    RouterOutlet,
   ],
   templateUrl: './app.html',
   styleUrl: './app.scss',
@@ -35,6 +42,7 @@ export class App {
   private readonly document = inject(DOCUMENT);
   private readonly destroyRef = inject(DestroyRef);
   private readonly swUpdate = inject(SwUpdate);
+  private readonly router = inject(Router);
   protected readonly auth = inject(AuthService);
   protected readonly connectivity = inject(ConnectivityService);
   protected readonly loading = inject(LoadingService);
@@ -43,6 +51,7 @@ export class App {
   protected readonly isInstalled = signal(this.isStandalone());
   protected readonly isIos = /iphone|ipad|ipod/i.test(navigator.userAgent);
   protected readonly showInstallHelp = signal(false);
+  private routeLoadingId: number | null = null;
 
   constructor() {
     if (this.swUpdate.isEnabled) {
@@ -53,6 +62,24 @@ export class App {
         )
         .subscribe(() => this.updateReady.set(true));
     }
+
+    this.router.events.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((event) => {
+      if (event instanceof NavigationStart) {
+        if (this.routeLoadingId !== null) {
+          this.loading.end(this.routeLoadingId);
+        }
+        this.routeLoadingId = this.loading.begin('正在切換頁面…');
+      } else if (
+        event instanceof NavigationEnd ||
+        event instanceof NavigationCancel ||
+        event instanceof NavigationError
+      ) {
+        if (this.routeLoadingId !== null) {
+          this.loading.end(this.routeLoadingId);
+          this.routeLoadingId = null;
+        }
+      }
+    });
   }
 
   @HostListener('window:beforeinstallprompt', ['$event'])

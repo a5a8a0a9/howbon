@@ -5,7 +5,7 @@
 >
   <div class="paper-noise" aria-hidden="true"></div>
   <header class="site-header">
-    <a class="brand" href="#top" aria-label="好棒棒集章首頁"
+    <a class="brand" routerLink="/home" aria-label="好棒棒集章首頁"
       ><span class="brand-mark" aria-hidden="true">棒</span><span>好棒棒集章</span></a
     >
     <div class="header-actions">
@@ -45,24 +45,10 @@
         >目前離線：可以查看最近資料，連線後才能蓋章、編輯或兌換。
       </aside>
     }
-    <main id="top" class="dashboard">
-      <section class="hero">
-        <div class="hero-copy">
-          <p class="eyebrow"><span></span> 把今天的小進步收好</p>
-          <h1>今天也要<br /><em>好棒棒</em></h1>
-          <p>
-            替完成的小事蓋一個章，寫下值得記住的心情。集滿五枚章，就帶走一枚徽章和一張獎賞票券。
-          </p>
-        </div>
-        <app-stamp-card />
-      </section>
-      <app-stamp-journal />
-      <app-rewards />
+    <main id="top" class="page-shell">
+      <router-outlet />
     </main>
-    <footer class="site-footer">
-      <span class="brand-mark" aria-hidden="true">棒</span>
-      <p><strong>好棒棒集章</strong><br />每一次微小進步，都值得被好好收藏。</p>
-    </footer>
+    <app-bottom-nav />
   }
 </div>
 

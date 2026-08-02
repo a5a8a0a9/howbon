@@ -20,6 +20,13 @@
     <link rel="manifest" href="manifest.webmanifest" />
   </head>
   <body>
+    <script>
+      const redirectPath = sessionStorage.getItem('howbon.redirect-path');
+      if (redirectPath) {
+        sessionStorage.removeItem('howbon.redirect-path');
+        window.history.replaceState(null, '', redirectPath);
+      }
+    </script>
     <app-root></app-root>
     <noscript>請啟用 JavaScript，才能使用好棒棒集章。</noscript>
   </body>

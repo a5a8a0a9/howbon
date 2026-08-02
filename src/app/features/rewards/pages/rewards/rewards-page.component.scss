@@ -1,0 +1,85 @@
+:host {
+  display: block;
+  padding-top: 44px;
+}
+
+.page-card {
+  padding: clamp(30px, 6vw, 58px);
+  border-radius: 30px;
+  background: #eee5d1;
+}
+
+app-page-header {
+  display: block;
+  margin-bottom: 28px;
+}
+
+app-ticket-balance {
+  display: block;
+  width: fit-content;
+  margin-bottom: 26px;
+  border-radius: 16px;
+  padding: 12px 16px;
+  background: rgb(255 252 245 / 82%);
+}
+
+.history {
+  padding: 24px;
+  border-radius: var(--radius-card);
+  background: rgb(255 252 245 / 70%);
+
+  > h2 {
+    margin: 0;
+    color: var(--color-ink);
+    font-size: 1.25rem;
+  }
+}
+
+.history-list {
+  display: grid;
+  gap: 10px;
+  margin-top: 18px;
+
+  article {
+    display: grid;
+    grid-template-columns: 34px 1fr auto;
+    align-items: center;
+    gap: 12px;
+    padding: 14px;
+    border-radius: 13px;
+    background: rgb(255 255 255 / 60%);
+
+    > span {
+      color: var(--color-success);
+    }
+  }
+
+  strong,
+  small {
+    display: block;
+  }
+
+  small,
+  time {
+    color: var(--color-muted-light);
+    font-size: 0.72rem;
+  }
+}
+
+@media (max-width: 520px) {
+  .page-card {
+    padding: 28px 18px;
+  }
+
+  .history {
+    padding: 20px 16px;
+  }
+
+  .history-list article {
+    grid-template-columns: 28px 1fr;
+
+    time {
+      grid-column: 2;
+    }
+  }
+}

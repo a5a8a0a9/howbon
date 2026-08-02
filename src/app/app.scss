@@ -20,8 +20,7 @@
   mix-blend-mode: multiply;
 }
 .site-header,
-.dashboard,
-.site-footer {
+.page-shell {
   position: relative;
   z-index: 1;
   width: min(1120px, calc(100% - 40px));
@@ -143,67 +142,9 @@
   box-shadow: 0 8px 24px rgb(45 69 60 / 22%);
   font-size: 0.8rem;
 }
-.dashboard {
-  display: grid;
-  gap: 70px;
-  padding-bottom: 90px;
-}
-.hero {
-  display: grid;
-  grid-template-columns: minmax(0, 0.8fr) minmax(480px, 1.2fr);
-  gap: clamp(44px, 8vw, 100px);
-  align-items: center;
-  min-height: 680px;
-  padding: 72px 0 44px;
-}
-.hero-copy .eyebrow {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin: 0;
-  color: #665349;
-  font-size: 0.74rem;
-  font-weight: 900;
-  letter-spacing: 0.12em;
-}
-.eyebrow span {
-  width: 34px;
-  height: 2px;
-  background: #cf5f4d;
-}
-.hero h1 {
-  margin: 24px 0 26px;
-  color: #47352c;
-  font-size: clamp(3.7rem, 7vw, 6.2rem);
-  line-height: 0.94;
-  letter-spacing: -0.07em;
-}
-.hero h1 em {
-  color: #c95847;
-  font-style: normal;
-}
-.hero-copy > p:last-child {
-  max-width: 410px;
-  margin: 0;
-  color: #69574d;
-  line-height: 1.9;
-}
-.site-footer {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 34px 0 42px;
-  border-top: 1px solid rgb(91 70 55 / 20%);
-}
-.site-footer p {
-  margin: 0;
-  color: #7b695e;
-  font-size: 0.78rem;
-  line-height: 1.65;
-}
-.site-footer strong {
-  color: #4b3a32;
-  letter-spacing: 0.08em;
+.page-shell {
+  min-height: calc(100dvh - 92px);
+  padding-bottom: calc(116px + env(safe-area-inset-bottom));
 }
 app-dialog > p {
   color: #79675c;
@@ -213,7 +154,7 @@ app-dialog > p {
   position: fixed;
   z-index: 55;
   right: 22px;
-  bottom: 22px;
+  bottom: calc(108px + env(safe-area-inset-bottom));
   display: flex;
   align-items: center;
   gap: 18px;
@@ -249,21 +190,9 @@ app-dialog > p {
     transform: scale(1.08) rotate(4deg);
   }
 }
-@media (max-width: 900px) {
-  .hero {
-    grid-template-columns: 1fr;
-    gap: 54px;
-    min-height: 0;
-    padding-top: 64px;
-  }
-  .hero-copy {
-    max-width: 620px;
-  }
-}
 @media (max-width: 580px) {
   .site-header,
-  .dashboard,
-  .site-footer {
+  .page-shell {
     width: min(100% - 28px, 1120px);
   }
   .site-header {
@@ -277,21 +206,12 @@ app-dialog > p {
   .ghost-button {
     padding: 8px;
   }
-  .hero {
-    padding-top: 52px;
-  }
-  .hero h1 {
-    font-size: clamp(3.4rem, 18vw, 5rem);
-  }
   .offline-banner {
     border-radius: 14px;
   }
-  .dashboard {
-    gap: 48px;
-  }
   .update-toast {
     right: 14px;
-    bottom: 14px;
+    bottom: calc(100px + env(safe-area-inset-bottom));
     left: 14px;
     justify-content: space-between;
   }
