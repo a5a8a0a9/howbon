@@ -24,6 +24,7 @@ export class TicketService {
   readonly availableTickets = computed(() =>
     this.ticketState().filter((ticket) => ticket.status === 'available'),
   );
+  readonly availableCount = computed(() => this.availableTickets().length);
   readonly redeemedTickets = computed(() =>
     this.ticketState().filter((ticket) => ticket.status === 'redeemed'),
   );

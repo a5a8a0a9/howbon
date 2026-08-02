@@ -70,6 +70,39 @@ service cloud.firestore {
         && data.updatedAt is timestamp;
     }
 
+    function validStoreItem(data) {
+      return data.keys().hasOnly(['name', 'price', 'createdAt', 'updatedAt'])
+        && data.keys().hasAll(['name', 'price', 'createdAt', 'updatedAt'])
+        && data.name is string
+        && data.name.size() > 0
+        && data.name.size() <= 80
+        && data.price is int
+        && data.price == 1
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    function validPurchase(data) {
+      return data.keys().hasOnly([
+          'storeItemId', 'nameSnapshot', 'price', 'ticketIds', 'purchasedAt'
+        ])
+        && data.keys().hasAll([
+          'storeItemId', 'nameSnapshot', 'price', 'ticketIds', 'purchasedAt'
+        ])
+        && data.storeItemId is string
+        && data.storeItemId.size() > 0
+        && data.nameSnapshot is string
+        && data.nameSnapshot.size() > 0
+        && data.nameSnapshot.size() <= 80
+        && data.price is int
+        && data.price == 1
+        && data.ticketIds is list
+        && data.ticketIds.size() == 1
+        && data.ticketIds[0] is string
+        && data.ticketIds[0].size() > 0
+        && data.purchasedAt is timestamp;
+    }
+
     match /users/{uid} {
       allow read: if signedInAs(uid);
       allow create: if signedInAs(uid)
@@ -115,17 +148,43 @@ service cloud.firestore {
           && request.resource.data.badgeOrdinal == resource.data.badgeOrdinal
           && request.resource.data.createdAt == resource.data.createdAt
           && request.resource.data.redeemedAt == request.time
-          && (
-            (request.resource.data.wishId == null
-              && request.resource.data.rewardNameSnapshot == null)
-            ||
-            (request.resource.data.wishId is string
-              && request.resource.data.rewardNameSnapshot is string
-              && request.resource.data.rewardNameSnapshot.size() > 0
-              && request.resource.data.rewardNameSnapshot.size() <= 80
-              && exists(/databases/$(database)/documents/users/$(uid)/wishes/$(request.resource.data.wishId)))
-          );
+          && request.resource.data.wishId == null
+          && request.resource.data.rewardNameSnapshot == null
+          && existsAfter(/databases/$(database)/documents/users/$(uid)/purchases/$(ticketId))
+          && getAfter(/databases/$(database)/documents/users/$(uid)/purchases/$(ticketId)).data.ticketIds[0] == ticketId;
         allow delete: if false;
+      }
+
+      match /storeItems/{storeItemId} {
+        allow read: if signedInAs(uid);
+        allow create: if signedInAs(uid)
+          && validStoreItem(request.resource.data)
+          && request.resource.data.createdAt == request.time
+          && request.resource.data.updatedAt == request.time;
+        allow update: if signedInAs(uid)
+          && validStoreItem(request.resource.data)
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['name', 'updatedAt'])
+          && request.resource.data.price == resource.data.price
+          && request.resource.data.createdAt == resource.data.createdAt
+          && request.resource.data.updatedAt == request.time;
+        allow delete: if signedInAs(uid);
+      }
+
+      match /purchases/{purchaseId} {
+        allow read: if signedInAs(uid);
+        allow create: if signedInAs(uid)
+          && validPurchase(request.resource.data)
+          && purchaseId == request.resource.data.ticketIds[0]
+          && request.resource.data.purchasedAt == request.time
+          && existsAfter(/databases/$(database)/documents/users/$(uid)/storeItems/$(request.resource.data.storeItemId))
+          && getAfter(/databases/$(database)/documents/users/$(uid)/storeItems/$(request.resource.data.storeItemId)).data.name == request.resource.data.nameSnapshot
+          && getAfter(/databases/$(database)/documents/users/$(uid)/storeItems/$(request.resource.data.storeItemId)).data.price == request.resource.data.price
+          && get(/databases/$(database)/documents/users/$(uid)/tickets/$(request.resource.data.ticketIds[0])).data.status == 'available'
+          && getAfter(/databases/$(database)/documents/users/$(uid)/tickets/$(request.resource.data.ticketIds[0])).data.status == 'redeemed'
+          && getAfter(/databases/$(database)/documents/users/$(uid)/tickets/$(request.resource.data.ticketIds[0])).data.wishId == null
+          && getAfter(/databases/$(database)/documents/users/$(uid)/tickets/$(request.resource.data.ticketIds[0])).data.rewardNameSnapshot == null
+          && getAfter(/databases/$(database)/documents/users/$(uid)/tickets/$(request.resource.data.ticketIds[0])).data.redeemedAt == request.time;
+        allow update, delete: if false;
       }
 
       match /wishes/{wishId} {

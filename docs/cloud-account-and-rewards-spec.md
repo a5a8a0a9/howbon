@@ -115,6 +115,8 @@
 | `ticketIds`    | string[]  | 本版本長度固定為 1，預留多票券價格 |
 | `purchasedAt`  | timestamp | 購買時間                           |
 
+`purchaseId` 固定使用本次消耗的 ticket ID；本版本每筆購買只消耗一張票券，因此可同時避免 transaction 重試產生重複 purchase。
+
 既有 `wishes` collection 與舊 redeemed tickets 不搬移、不刪除，新 UI 完全忽略；舊 available tickets 繼續作為餘額。
 
 ## 5. 權限與交易邊界
@@ -122,6 +124,7 @@
 - Firestore Rules 只允許已登入且 `request.auth.uid == uid` 的使用者存取自己的路徑。
 - Store item 建立時 `price == 1`，更新時價格及建立時間不可修改。
 - Purchase 只能建立，不能更新或刪除；必須與 available → redeemed ticket 更新發生於同一 transaction。
+- Purchase 文件 ID 必須等於唯一的 `ticketIds[0]`，同一張票券不能建立第二筆購買。
 - Purchase 的商品名稱、價格必須等於 transaction 中讀取的 store item；ticketIds 目前只能包含一張票券。
 - 新增蓋章、更新進度及第五章建立票券仍必須在同一 transaction 中完成。
 

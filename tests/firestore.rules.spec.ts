@@ -6,7 +6,16 @@ import {
   assertSucceeds,
   initializeTestEnvironment,
 } from '@firebase/rules-unit-testing';
-import { doc, getDoc, serverTimestamp, setDoc, updateDoc } from 'firebase/firestore';
+import {
+  deleteDoc,
+  doc,
+  getDoc,
+  runTransaction,
+  serverTimestamp,
+  setDoc,
+  updateDoc,
+} from 'firebase/firestore';
+import type { Firestore } from 'firebase/firestore';
 import { afterAll, afterEach, beforeAll, describe, it } from 'vitest';
 
 const projectId = 'demo-howbon';
@@ -22,6 +31,51 @@ function validUser() {
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
   };
+}
+
+function validTicket(badgeOrdinal = 1) {
+  return {
+    badgeOrdinal,
+    status: 'available',
+    wishId: null,
+    rewardNameSnapshot: null,
+    createdAt: serverTimestamp(),
+    redeemedAt: null,
+  };
+}
+
+function validStoreItem(name = '看一場電影') {
+  return {
+    name,
+    price: 1,
+    createdAt: serverTimestamp(),
+    updatedAt: serverTimestamp(),
+  };
+}
+
+async function purchaseWithTicket(db: Firestore, ticketId: string, itemId: string) {
+  const ticketRef = doc(db, 'users', 'alice', 'tickets', ticketId);
+  const itemRef = doc(db, 'users', 'alice', 'storeItems', itemId);
+  const purchaseRef = doc(db, 'users', 'alice', 'purchases', ticketId);
+  return runTransaction(db, async (transaction) => {
+    const [ticket, item] = await Promise.all([
+      transaction.get(ticketRef),
+      transaction.get(itemRef),
+    ]);
+    transaction.update(ticketRef, {
+      status: 'redeemed',
+      wishId: null,
+      rewardNameSnapshot: null,
+      redeemedAt: serverTimestamp(),
+    });
+    transaction.set(purchaseRef, {
+      storeItemId: itemId,
+      nameSnapshot: item.data()?.['name'] ?? '看一場電影',
+      price: item.data()?.['price'] ?? 1,
+      ticketIds: [ticket.id],
+      purchasedAt: serverTimestamp(),
+    });
+  });
 }
 
 describe('Firestore security rules', () => {
@@ -66,20 +120,37 @@ describe('Firestore security rules', () => {
     );
   });
 
-  it('allows one-way ticket redemption and rejects reuse', async () => {
+  it('enforces price 1 and immutable price on store items', async () => {
     const db = environment.authenticatedContext('alice').firestore();
-    const ticketRef = doc(db, 'users', 'alice', 'tickets', 'badge-1');
-    await assertSucceeds(
-      setDoc(ticketRef, {
-        badgeOrdinal: 1,
-        status: 'available',
-        wishId: null,
-        rewardNameSnapshot: null,
-        createdAt: serverTimestamp(),
-        redeemedAt: null,
+    const itemRef = doc(db, 'users', 'alice', 'storeItems', 'item-1');
+    await assertSucceeds(setDoc(itemRef, validStoreItem()));
+    await assertFails(
+      setDoc(doc(db, 'users', 'alice', 'storeItems', 'item-2'), {
+        ...validStoreItem(),
+        price: 2,
       }),
     );
-    await assertSucceeds(
+    await assertFails(updateDoc(itemRef, { price: 2, updatedAt: serverTimestamp() }));
+    await assertSucceeds(updateDoc(itemRef, { name: '新的名稱', updatedAt: serverTimestamp() }));
+  });
+
+  it('requires purchase creation and ticket redemption to be atomic', async () => {
+    const db = environment.authenticatedContext('alice').firestore();
+    const ticketRef = doc(db, 'users', 'alice', 'tickets', 'badge-1');
+    const itemRef = doc(db, 'users', 'alice', 'storeItems', 'item-1');
+    await assertSucceeds(setDoc(ticketRef, validTicket()));
+    await assertSucceeds(setDoc(itemRef, validStoreItem()));
+
+    await assertFails(
+      setDoc(doc(db, 'users', 'alice', 'purchases', 'badge-1'), {
+        storeItemId: 'item-1',
+        nameSnapshot: '看一場電影',
+        price: 1,
+        ticketIds: ['badge-1'],
+        purchasedAt: serverTimestamp(),
+      }),
+    );
+    await assertFails(
       updateDoc(ticketRef, {
         status: 'redeemed',
         wishId: null,
@@ -87,6 +158,41 @@ describe('Firestore security rules', () => {
         redeemedAt: serverTimestamp(),
       }),
     );
-    await assertFails(updateDoc(ticketRef, { status: 'available', redeemedAt: null }));
+    await assertSucceeds(purchaseWithTicket(db, 'badge-1', 'item-1'));
+  });
+
+  it('rejects a deleted item and ticket reuse', async () => {
+    const db = environment.authenticatedContext('alice').firestore();
+    await assertSucceeds(setDoc(doc(db, 'users', 'alice', 'tickets', 'badge-1'), validTicket()));
+    await assertSucceeds(setDoc(doc(db, 'users', 'alice', 'tickets', 'badge-2'), validTicket(2)));
+    const itemRef = doc(db, 'users', 'alice', 'storeItems', 'item-1');
+    await assertSucceeds(setDoc(itemRef, validStoreItem()));
+    await assertSucceeds(purchaseWithTicket(db, 'badge-1', 'item-1'));
+
+    await assertFails(
+      setDoc(doc(db, 'users', 'alice', 'purchases', 'badge-1-copy'), {
+        storeItemId: 'item-1',
+        nameSnapshot: '看一場電影',
+        price: 1,
+        ticketIds: ['badge-1'],
+        purchasedAt: serverTimestamp(),
+      }),
+    );
+    await assertSucceeds(deleteDoc(itemRef));
+    await assertFails(purchaseWithTicket(db, 'badge-2', 'item-1'));
+  });
+
+  it('keeps purchases immutable', async () => {
+    const db = environment.authenticatedContext('alice').firestore();
+    const ticketRef = doc(db, 'users', 'alice', 'tickets', 'badge-1');
+    await assertSucceeds(setDoc(ticketRef, validTicket()));
+    await assertSucceeds(
+      setDoc(doc(db, 'users', 'alice', 'storeItems', 'item-1'), validStoreItem()),
+    );
+    await assertSucceeds(purchaseWithTicket(db, 'badge-1', 'item-1'));
+    const purchaseRef = doc(db, 'users', 'alice', 'purchases', 'badge-1');
+
+    await assertFails(updateDoc(purchaseRef, { nameSnapshot: '竄改名稱' }));
+    await assertFails(deleteDoc(purchaseRef));
   });
 });

@@ -1,6 +1,7 @@
 export const STAMPS_PER_BADGE = 5;
 export const MAX_STAMP_NOTE_LENGTH = 300;
 export const MAX_WISH_NAME_LENGTH = 80;
+export const MAX_STORE_ITEM_NAME_LENGTH = 80;
 
 export interface AppUserProfile {
   uid: string;
@@ -39,6 +40,30 @@ export interface RewardWish {
   name: string;
   createdAt: Date | null;
   updatedAt: Date | null;
+}
+
+export interface StoreItem {
+  id: string;
+  name: string;
+  price: number;
+  createdAt: Date | null;
+  updatedAt: Date | null;
+}
+
+export interface PurchaseRecord {
+  id: string;
+  storeItemId: string;
+  nameSnapshot: string;
+  price: number;
+  ticketIds: string[];
+  purchasedAt: Date | null;
+}
+
+export interface InventoryItem {
+  storeItemId: string;
+  name: string;
+  quantity: number;
+  latestPurchasedAt: Date | null;
 }
 
 export interface AddStampResult {
