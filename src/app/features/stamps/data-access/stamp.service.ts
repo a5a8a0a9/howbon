@@ -1,15 +1,5 @@
 import { Injectable, computed, effect, inject, signal } from '@angular/core';
-import {
-  collection,
-  doc,
-  limit,
-  onSnapshot,
-  orderBy,
-  query,
-  runTransaction,
-  serverTimestamp,
-  updateDoc,
-} from 'firebase/firestore';
+import { collection, doc, onSnapshot, runTransaction, serverTimestamp } from 'firebase/firestore';
 import { AuthService } from '../../../core/auth/auth.service';
 import { ConnectivityService } from '../../../core/connectivity/connectivity.service';
 import { getFirebaseServices } from '../../../core/firebase/firebase-services';
@@ -18,7 +8,6 @@ import {
   AddStampResult,
   MAX_STAMP_NOTE_LENGTH,
   STAMPS_PER_BADGE,
-  StampRecord,
   UserProgress,
   toDate,
 } from '../../../shared/models/models';
@@ -35,10 +24,8 @@ export class StampService {
   private readonly services = getFirebaseServices();
   private readonly globalLoading = inject(LoadingService);
   private readonly progressState = signal<UserProgress>(EMPTY_PROGRESS);
-  private readonly stampState = signal<StampRecord[]>([]);
 
   readonly progress = this.progressState.asReadonly();
-  readonly stamps = this.stampState.asReadonly();
   readonly currentStampCount = computed(() => this.progressState().currentStampCount);
   readonly badgeCount = computed(() => this.progressState().badgeCount);
   readonly loading = signal(false);
@@ -52,7 +39,6 @@ export class StampService {
     effect((onCleanup) => {
       const user = this.auth.user();
       this.progressState.set(EMPTY_PROGRESS);
-      this.stampState.set([]);
       this.error.set(null);
       if (!user || !this.services) {
         this.loading.set(false);
@@ -61,11 +47,6 @@ export class StampService {
 
       this.loading.set(true);
       const profileRef = doc(this.services.firestore, 'users', user.uid);
-      const stampsQuery = query(
-        collection(this.services.firestore, 'users', user.uid, 'stamps'),
-        orderBy('createdAt', 'desc'),
-        limit(100),
-      );
       const unsubscribeProfile = onSnapshot(
         profileRef,
         (snapshot) => {
@@ -85,27 +66,7 @@ export class StampService {
           this.loading.set(false);
         },
       );
-      const unsubscribeStamps = onSnapshot(
-        stampsQuery,
-        (snapshot) => {
-          this.stampState.set(
-            snapshot.docs.map((entry) => {
-              const data = entry.data();
-              return {
-                id: entry.id,
-                note: String(data['note'] ?? ''),
-                createdAt: toDate(data['createdAt']),
-                updatedAt: toDate(data['updatedAt']),
-              };
-            }),
-          );
-        },
-        () => this.error.set('無法讀取集章日誌，請稍後重試。'),
-      );
-      onCleanup(() => {
-        unsubscribeProfile();
-        unsubscribeStamps();
-      });
+      onCleanup(unsubscribeProfile);
     });
   }
 
@@ -180,23 +141,6 @@ export class StampService {
     } finally {
       this.saving.set(false);
     }
-  }
-
-  async updateStampNote(stampId: string, note: string): Promise<void> {
-    const user = this.requireWritableUser();
-    const cleanNote = note.trim();
-    if (cleanNote.length > MAX_STAMP_NOTE_LENGTH) {
-      throw new Error(`留言最多 ${MAX_STAMP_NOTE_LENGTH} 個字。`);
-    }
-    if (!this.services) {
-      throw new Error('Firebase 尚未設定。');
-    }
-    await this.globalLoading.run('正在儲存留言…', () =>
-      updateDoc(doc(this.services!.firestore, 'users', user.uid, 'stamps', stampId), {
-        note: cleanNote,
-        updatedAt: serverTimestamp(),
-      }),
-    );
   }
 
   clearError(): void {

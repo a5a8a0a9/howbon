@@ -3,12 +3,35 @@
     eyebrow="HOW BON JOURNAL"
     title="集章日誌"
     titleId="journal-title"
-    [meta]="stamps.stamps().length + ' 筆紀錄'"
+    [meta]="journal.entries().length + ' 筆紀錄'"
   />
 
-  @if (stamps.loading()) {
+  <div class="month-navigation" aria-label="切換日誌月份">
+    <button
+      class="icon-button"
+      type="button"
+      aria-label="上一個月"
+      (click)="journal.previousMonth()"
+    >
+      <span class="material-symbols-rounded" aria-hidden="true">chevron_left</span>
+    </button>
+    <time [attr.datetime]="journal.selectedMonth() | date: 'yyyy-MM'">
+      {{ journal.selectedMonth() | date: 'yyyy年 M月' }}
+    </time>
+    <button
+      class="icon-button"
+      type="button"
+      aria-label="下一個月"
+      [disabled]="!journal.canGoNext()"
+      (click)="journal.nextMonth()"
+    >
+      <span class="material-symbols-rounded" aria-hidden="true">chevron_right</span>
+    </button>
+  </div>
+
+  @if (journal.loading()) {
     <p class="empty">正在整理你的好棒時刻…</p>
-  } @else if (stamps.stamps().length === 0) {
+  } @else if (journal.entries().length === 0) {
     <app-empty-state
       icon="notes"
       title="第一篇日誌等你寫下"
@@ -16,17 +39,27 @@
     />
   } @else {
     <ol class="timeline">
-      @for (stamp of stamps.stamps(); track stamp.id; let index = $index) {
+      @for (stamp of journal.entries(); track stamp.id; let index = $index) {
         <li>
-          <div class="stamp-dot" aria-hidden="true">{{ stamps.stamps().length - index }}</div>
+          <div class="stamp-dot" aria-hidden="true">{{ journal.entries().length - index }}</div>
           <article>
-            <time>{{ stamp.createdAt | date: 'yyyy/MM/dd HH:mm' }}</time>
+            <header>
+              <time>{{ stamp.createdAt | date: 'yyyy/MM/dd HH:mm' }}</time>
+              <button
+                class="icon-button"
+                type="button"
+                [disabled]="!connectivity.online()"
+                [attr.aria-label]="
+                  '編輯 ' + (stamp.createdAt | date: 'yyyy/MM/dd HH:mm') + ' 的留言'
+                "
+                (click)="openEdit(stamp)"
+              >
+                <span class="material-symbols-rounded" aria-hidden="true">edit</span>
+              </button>
+            </header>
             <p [class.no-note]="!stamp.note">
               {{ stamp.note || '這次沒有留下文字，但進步已經被收藏。' }}
             </p>
-            <button type="button" [disabled]="!connectivity.online()" (click)="openEdit(stamp)">
-              <span class="material-symbols-rounded" aria-hidden="true">edit</span> 編輯留言
-            </button>
           </article>
         </li>
       }

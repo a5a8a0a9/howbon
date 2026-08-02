@@ -6,7 +6,7 @@ import { MAX_STAMP_NOTE_LENGTH, StampRecord } from '../../../../shared/models/mo
 import { AppDialogComponent } from '../../../../shared/ui/app-dialog/app-dialog.component';
 import { EmptyStateComponent } from '../../../../shared/ui/empty-state/empty-state.component';
 import { PageHeaderComponent } from '../../../../shared/ui/page-header/page-header.component';
-import { StampService } from '../../data-access/stamp.service';
+import { JournalService } from '../../data-access/journal.service';
 
 @Component({
   selector: 'app-stamp-journal',
@@ -15,7 +15,7 @@ import { StampService } from '../../data-access/stamp.service';
   styleUrl: './stamp-journal.component.scss',
 })
 export class StampJournalComponent {
-  protected readonly stamps = inject(StampService);
+  protected readonly journal = inject(JournalService);
   protected readonly connectivity = inject(ConnectivityService);
   protected readonly editingStamp = signal<StampRecord | null>(null);
   protected readonly saving = signal(false);
@@ -44,7 +44,7 @@ export class StampJournalComponent {
     this.saving.set(true);
     this.editError.set(null);
     try {
-      await this.stamps.updateStampNote(stamp.id, this.editNote);
+      await this.journal.updateNote(stamp.id, this.editNote);
       this.closeEdit();
     } catch (error: unknown) {
       this.editError.set(error instanceof Error ? error.message : '留言儲存失敗。');
