@@ -1,0 +1,35 @@
+<main class="login-shell">
+  <section class="login-copy" aria-labelledby="login-title">
+    <p class="eyebrow"><span></span> 把每一次進步收藏起來</p>
+    <h1 id="login-title">今天也要<br /><em>好棒棒</em></h1>
+    <p class="intro">
+      替值得開心的小事蓋一個章，留下當下想說的話。集滿五個章，就收下一枚徽章和一張獎賞票券。
+    </p>
+  </section>
+
+  <section class="login-card" aria-labelledby="account-title">
+    <span class="tape" aria-hidden="true"></span>
+    <div class="login-mark" aria-hidden="true">
+      <span class="material-symbols-rounded">auto_awesome</span>
+    </div>
+    @if (auth.configured) {
+      <p class="card-kicker">WELCOME BACK</p>
+      <h2 id="account-title">登入你的集章簿</h2>
+      <button
+        class="google-button"
+        type="button"
+        [disabled]="auth.isSigningIn()"
+        (click)="auth.signInWithGoogle()"
+      >
+        <span class="material-symbols-rounded" aria-hidden="true">login</span>
+        {{ auth.isSigningIn() ? '正在開啟登入…' : '使用 Google 帳號登入' }}
+      </button>
+    } @else {
+      <p class="card-kicker">SETUP REQUIRED</p>
+      <h2 id="account-title">還差一小步</h2>
+    }
+    @if (auth.error()) {
+      <p class="error-message" role="alert">{{ auth.error() }}</p>
+    }
+  </section>
+</main>

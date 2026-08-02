@@ -1,0 +1,27 @@
+<div class="dialog-backdrop" (click)="dismissFromBackdrop($event)">
+  <section
+    #dialogCard
+    class="dialog-card"
+    tabindex="-1"
+    [attr.role]="role()"
+    aria-modal="true"
+    [attr.aria-labelledby]="titleId()"
+  >
+    @if (closeLabel()) {
+      <button
+        class="icon-button dialog-close"
+        type="button"
+        [attr.aria-label]="closeLabel()"
+        (click)="dismissed.emit()"
+      >
+        <span class="material-symbols-rounded" aria-hidden="true">close</span>
+      </button>
+    }
+    <ng-content select="[dialog-icon]" />
+    @if (kicker()) {
+      <p class="dialog-kicker">{{ kicker() }}</p>
+    }
+    <h2 [id]="titleId()">{{ title() }}</h2>
+    <ng-content />
+  </section>
+</div>

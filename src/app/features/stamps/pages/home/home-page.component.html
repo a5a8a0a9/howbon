@@ -1,0 +1,43 @@
+<section class="hero" aria-labelledby="home-title">
+  <div class="hero-copy">
+    <p class="eyebrow"><span></span> 日日都值得被肯定</p>
+    <h1 id="home-title">今天也要<br /><em>好棒棒！</em></h1>
+    <p class="intro">
+      每完成一件值得開心的小事，就替自己蓋一個章。集滿五個，收下一枚專屬徽章和一張獎賞票券。
+    </p>
+    <div class="tiny-note" aria-hidden="true">
+      <span class="note-arrow">↗</span>
+      <span>慢慢來，也很厲害</span>
+    </div>
+  </div>
+  <app-stamp-card />
+</section>
+
+<section class="collection" aria-labelledby="collection-title">
+  <div class="collection-copy">
+    <p class="section-kicker">HOW BON COLLECTION</p>
+    <h2 id="collection-title">我的好棒收藏</h2>
+    <p>每五個印章，就會變成一枚記得住的成就。</p>
+  </div>
+
+  <div class="badge-showcase">
+    <div class="badge-art" [class.is-empty]="stamps.badgeCount() === 0" aria-hidden="true">
+      <span class="badge-inner"><b>好棒</b><small>GOOD JOB!</small></span>
+      <span class="ribbon ribbon-left"></span>
+      <span class="ribbon ribbon-right"></span>
+    </div>
+    <div
+      class="badge-copy"
+      aria-live="polite"
+      [attr.aria-label]="'已收藏 ' + stamps.badgeCount() + ' 枚徽章'"
+    >
+      <span>已收藏</span>
+      <strong>{{ stamps.badgeCount() }} <small>枚</small></strong>
+      @if (stamps.badgeCount() === 0) {
+        <p>第一枚徽章正在等你</p>
+      } @else {
+        <p>努力過的人都是戰士</p>
+      }
+    </div>
+  </div>
+</section>

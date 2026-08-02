@@ -1,0 +1,7 @@
+<div class="empty-state" [class.compact]="compact()">
+  @if (!compact()) {
+    <span class="material-symbols-rounded" aria-hidden="true">{{ icon() }}</span>
+  }
+  <h3>{{ title() }}</h3>
+  <p>{{ description() }}</p>
+</div>

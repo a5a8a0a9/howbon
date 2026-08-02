@@ -1,63 +1,120 @@
+import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { SwUpdate } from '@angular/service-worker';
+import { provideRouter, Router } from '@angular/router';
 import { EMPTY } from 'rxjs';
+import { describe, expect, it, vi } from 'vitest';
 import { App } from './app';
+import { routes } from './app.routes';
+import { AuthService } from './core/auth/auth.service';
+import { LoadingService } from './core/loading/loading.service';
+import { StampService } from './features/stamps/data-access/stamp.service';
 
-class MemoryStorage implements Storage {
-  private readonly values = new Map<string, string>();
-  get length(): number { return this.values.size; }
-  clear(): void { this.values.clear(); }
-  getItem(key: string): string | null { return this.values.get(key) ?? null; }
-  key(index: number): string | null { return [...this.values.keys()][index] ?? null; }
-  removeItem(key: string): void { this.values.delete(key); }
-  setItem(key: string, value: string): void { this.values.set(key, value); }
+function swUpdateStub() {
+  return {
+    isEnabled: false,
+    versionUpdates: EMPTY,
+    activateUpdate: () => Promise.resolve(true),
+  };
 }
 
 describe('App', () => {
-  beforeEach(async () => {
-    Object.defineProperty(globalThis, 'localStorage', {
-      configurable: true,
-      value: new MemoryStorage(),
-    });
-    Object.defineProperty(window, 'matchMedia', {
-      configurable: true,
-      value: () => ({ matches: false, addEventListener: () => undefined, removeEventListener: () => undefined }),
-    });
-    localStorage.clear();
+  it('renders the login gate while signed out', async () => {
+    const authStub = {
+      configured: true,
+      authReady: signal(true),
+      isSigningIn: signal(false),
+      error: signal<string | null>(null),
+      user: signal(null),
+      signInWithGoogle: vi.fn(),
+      signOut: vi.fn(),
+    };
     await TestBed.configureTestingModule({
       imports: [App],
       providers: [
-        {
-          provide: SwUpdate,
-          useValue: {
-            isEnabled: false,
-            versionUpdates: EMPTY,
-            activateUpdate: () => Promise.resolve(true),
-          },
-        },
+        { provide: SwUpdate, useValue: swUpdateStub() },
+        { provide: AuthService, useValue: authStub },
+        provideRouter(routes),
       ],
     }).compileComponents();
-  });
 
-  it('creates the app and renders the product heading', async () => {
     const fixture = TestBed.createComponent(App);
-    await fixture.whenStable();
+    fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
 
-    expect(fixture.componentInstance).toBeTruthy();
     expect(compiled.querySelector('h1')?.textContent).toContain('今天也要');
-    expect(compiled.querySelector('.round-count')?.textContent).toContain('0/ 5');
+    expect(compiled.querySelector('.stamp-button')).toBeNull();
+    expect(compiled.textContent).toContain('使用 Google 帳號登入');
   });
 
-  it('adds a stamp when the primary button is clicked', async () => {
+  it('renders the cloud dashboard for a signed-in user', async () => {
+    const authStub = {
+      configured: true,
+      authReady: signal(true),
+      isSigningIn: signal(false),
+      error: signal<string | null>(null),
+      user: signal({ uid: 'alice', displayName: '小明', photoURL: null }),
+      signInWithGoogle: vi.fn(),
+      signOut: vi.fn(),
+    };
+    const stampStub = {
+      currentStampCount: signal(0),
+      badgeCount: signal(3),
+      saving: signal(false),
+      addStamp: vi.fn(),
+    };
+    await TestBed.configureTestingModule({
+      imports: [App],
+      providers: [
+        { provide: SwUpdate, useValue: swUpdateStub() },
+        { provide: AuthService, useValue: authStub },
+        { provide: StampService, useValue: stampStub },
+        provideRouter(routes),
+      ],
+    }).compileComponents();
+
     const fixture = TestBed.createComponent(App);
+    await TestBed.inject(Router).navigateByUrl('/not-a-page');
+    await fixture.whenStable();
     fixture.detectChanges();
+    const compiled = fixture.nativeElement as HTMLElement;
 
-    const button = fixture.nativeElement.querySelector('.stamp-button') as HTMLButtonElement;
-    button.click();
+    expect(compiled.querySelector('.account-chip')?.textContent).toContain('小明');
+    expect(compiled.querySelector('.header-ticket-pill')).toBeNull();
+    expect(compiled.querySelector('.stamp-button')).toBeTruthy();
+    expect(TestBed.inject(Router).url).toBe('/home');
+    expect(compiled.querySelector('.bottom-nav a.active')?.textContent).toContain('首頁');
+    expect(compiled.querySelector('.badge-copy')?.getAttribute('aria-label')).toBe(
+      '已收藏 3 枚徽章',
+    );
+  });
+
+  it('blocks the application while a global action is running', async () => {
+    const authStub = {
+      configured: true,
+      authReady: signal(true),
+      isSigningIn: signal(false),
+      error: signal<string | null>(null),
+      user: signal(null),
+      signInWithGoogle: vi.fn(),
+      signOut: vi.fn(),
+    };
+    await TestBed.configureTestingModule({
+      imports: [App],
+      providers: [
+        { provide: SwUpdate, useValue: swUpdateStub() },
+        { provide: AuthService, useValue: authStub },
+        provideRouter(routes),
+      ],
+    }).compileComponents();
+
+    const fixture = TestBed.createComponent(App);
+    TestBed.inject(LoadingService).begin('正在測試…');
     fixture.detectChanges();
+    const compiled = fixture.nativeElement as HTMLElement;
 
-    expect(button.disabled).toBe(true);
-    expect((fixture.nativeElement as HTMLElement).querySelectorAll('.stamp-slot.is-filled')).toHaveLength(1);
+    expect(compiled.querySelector('.app-shell')?.hasAttribute('inert')).toBe(true);
+    expect(compiled.querySelector('.app-shell')?.getAttribute('aria-busy')).toBe('true');
+    expect(compiled.querySelector('.loading-mask')?.textContent).toContain('正在測試…');
   });
 });

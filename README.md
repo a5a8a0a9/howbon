@@ -1,15 +1,46 @@
 # 好棒棒集章
 
-一個手機優先、可離線安裝的 Angular 22 PWA。替每一件值得肯定的小事蓋章，集滿五個印章就解鎖一枚「好棒棒徽章」。
+一個手機優先、可安裝的 Angular 22 PWA。使用 Google 帳號保存每一次值得肯定的小事，集滿五枚章即可解鎖徽章與獎賞票券；票券可在自訂商店購買獎賞道具。
+
+完整產品與資料規格請見 [`docs/cloud-account-and-rewards-spec.md`](docs/cloud-account-and-rewards-spec.md)。
 
 ## 功能
 
-- 手動蓋章與集滿動畫
-- 每五章自動解鎖徽章
-- 瀏覽器本機保存進度
-- 可安裝 PWA 與離線使用
-- 新版本更新提示
-- 響應式與減少動態效果支援
+- Google SSO 登入與依帳號隔離的 Firestore 資料
+- 每次蓋章可留下、修改或清空選填留言
+- 每五枚章自動產生一枚徽章與一張票券
+- 首頁、月份日誌、獎賞道具與商店四個 lazy-loaded 分頁
+- 可自行新增、改名與刪除商品的票券商店
+- 票券購買 transaction 與依商品合併數量的獎賞道具庫存
+- 全域 Loading mask 與離線唯讀保護
+- Firestore persistent cache 與離線唯讀狀態
+- 自行託管的 Material Symbols Rounded icon font
+- PWA 安裝與版本更新提示
+
+舊版 `localStorage` 進度不會讀取、搬移或上傳。
+
+## 必要環境
+
+- Node.js 24
+- npm 11
+- JDK 21（Firebase Emulator 必要）
+- 一個 Firebase project
+
+目前專案的 `.firebaserc` 使用安全的 `demo-howbon` 作為本機 Emulator project ID。連接正式 Firebase project 前，請將它改成實際 project ID。
+
+## Firebase Console 設定
+
+1. 建立 Firebase project 與 Web App。
+2. 在 Authentication 啟用 Google provider。
+3. 在 Authentication 的 Authorized domains 加入：
+   - `localhost`
+   - `howbon.young-app.com`
+   - 實際使用的 GitHub Pages 網域
+4. 建立 Native mode Cloud Firestore；台灣使用者建議採 `asia-east1`。
+5. 將 Firebase Web App config 填入 `src/environments/environment.ts`，取代所有 `REPLACE_WITH_...` 值。
+6. 將 `.firebaserc` 的 `default` 改成正式 Firebase project ID。
+
+Firebase Web config 會打包在前端，不能放入 Admin SDK 私鑰或服務帳號憑證；資料授權由 `firestore.rules` 負責。
 
 ## 本機開發
 
@@ -18,21 +49,36 @@ npm install
 npm start
 ```
 
-開啟 `http://localhost:4200`。
+開啟 `http://localhost:4200`。Firebase 尚未填寫時，應用程式會顯示設定提示，不會白屏或嘗試連線。
+
+啟動完整 Firebase Emulator：
+
+```bash
+npm run firebase:emulators
+```
+
+目前前端預設連接正式 Firebase config；Rules 自動測試則會使用 `demo-howbon` Firestore Emulator，不會觸碰正式資料。
 
 ## 驗證
 
 ```bash
 npm test -- --watch=false
-npm run build
+npm run test:rules
+npm run build -- --configuration production
 ```
 
-正式版輸出位於 `dist/howbon/browser`，部署時需使用 HTTPS 並將未知路徑回退至 `index.html`。
+- Angular 測試涵蓋登入門檻、路由、Loading、蓋章留言、月份邊界與道具庫存合併。
+- Rules 測試涵蓋未登入拒絕、帳號隔離、商品價格、購買交易、票券競爭與 purchase 不可變性。
+- 正式輸出位於 `dist/howbon/browser`。
 
 ## 發布
 
-推送至 `main` 後，GitHub Actions 會執行測試、建立正式版 PWA，並部署至 GitHub Pages。正式網域為 `https://howbon.young-app.com`。
+推送至 `main` 後，GitHub Actions 會使用 Node.js 24 與 JDK 21 執行 Angular 測試、Firestore Rules Emulator 測試、production build，並部署網站至 GitHub Pages。
 
-## 資料與隱私
+首次正式發布前，需由已登入 Firebase CLI 的維護者發布 Rules 與 indexes：
 
-進度只保存在使用者目前瀏覽器的 `localStorage`，不會傳送到伺服器，也不支援跨裝置同步。
+```bash
+npm run firebase:deploy:rules
+```
+
+網站仍部署於 `https://howbon.young-app.com`，不使用 Firebase Hosting。

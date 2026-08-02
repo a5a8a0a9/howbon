@@ -1,0 +1,32 @@
+.empty-state {
+  padding: 48px 20px 24px;
+  color: var(--color-muted-light);
+  text-align: center;
+
+  > span {
+    color: var(--color-accent);
+    font-size: 2.4rem;
+  }
+
+  h3 {
+    margin: 12px 0 6px;
+    color: var(--color-ink-soft);
+  }
+
+  p {
+    margin: 0;
+  }
+
+  &.compact {
+    padding: 36px 10px 16px;
+
+    h3 {
+      margin: 0 0 5px;
+      font-size: 1rem;
+    }
+
+    p {
+      font-size: 0.8rem;
+    }
+  }
+}

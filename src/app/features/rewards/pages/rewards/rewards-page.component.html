@@ -1,0 +1,35 @@
+<section class="rewards-page" aria-labelledby="rewards-page-title">
+  <app-page-header
+    eyebrow="MY REWARDS"
+    title="我的獎賞"
+    titleId="rewards-page-title"
+    [meta]="purchases.inventory().length + ' 種道具'"
+  />
+
+  @if (purchases.loading()) {
+    <p class="section-loading" role="status">正在整理你的獎賞道具…</p>
+  } @else if (purchases.inventory().length === 0) {
+    <app-empty-state
+      icon="inventory_2"
+      title="道具背包還是空的"
+      description="帶著票券去商店選一個想要的獎賞吧。"
+    />
+  } @else {
+    <div class="inventory-grid" aria-label="獎賞道具">
+      @for (item of purchases.inventory(); track item.storeItemId) {
+        <article class="inventory-card">
+          <div class="item-icon" aria-hidden="true">
+            <span class="material-symbols-rounded">featured_seasonal_and_gifts</span>
+          </div>
+          <div>
+            <h3>{{ item.name }}</h3>
+            @if (item.latestPurchasedAt) {
+              <time>最近獲得 {{ item.latestPurchasedAt | date: 'yyyy/MM/dd' }}</time>
+            }
+          </div>
+          <strong aria-label="數量 {{ item.quantity }}">× {{ item.quantity }}</strong>
+        </article>
+      }
+    </div>
+  }
+</section>

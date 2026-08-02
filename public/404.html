@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>正在開啟好棒棒集章</title>
+  </head>
+  <body>
+    <p>正在開啟好棒棒集章…</p>
+    <script>
+      const requestedPath = `${window.location.pathname}${window.location.search}${window.location.hash}`;
+      sessionStorage.setItem('howbon.redirect-path', requestedPath);
+      const isProjectPages = window.location.hostname.endsWith('.github.io');
+      const firstSegment = window.location.pathname.split('/').filter(Boolean)[0];
+      const appRoot = isProjectPages && firstSegment ? `/${firstSegment}/` : '/';
+      window.location.replace(appRoot);
+    </script>
+  </body>
+</html>

@@ -1,0 +1,158 @@
+:host {
+  display: block;
+  padding-top: 44px;
+}
+
+.store-page {
+  padding: clamp(30px, 5vw, 52px);
+  border-radius: 26px;
+  background: rgb(255 250 240 / 62%);
+}
+
+.store-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid rgb(91 70 55 / 16%);
+}
+
+app-page-header {
+  display: block;
+  min-width: 0;
+}
+
+.store-ticket-pill {
+  display: inline-flex;
+  align-items: center;
+  flex: 0 0 auto;
+  gap: 7px;
+  border: 1px solid rgb(91 70 55 / 16%);
+  border-radius: 999px;
+  padding: 9px 13px;
+  background: rgb(240 217 197 / 58%);
+  color: var(--color-accent-dark);
+  font-size: 0.86rem;
+
+  .material-symbols-rounded {
+    font-size: 1.2rem;
+  }
+
+  strong {
+    min-width: 1ch;
+    text-align: center;
+  }
+}
+
+.item-form {
+  display: grid;
+  grid-template-columns: 1fr 46px;
+  gap: 8px;
+  width: min(620px, 100%);
+  margin: 22px 0 28px;
+}
+
+.add-button {
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: var(--radius-control);
+  background: var(--color-accent);
+  color: white;
+  cursor: pointer;
+
+  &:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+}
+
+.section-loading {
+  padding: 40px 20px;
+  color: var(--color-muted-light);
+  text-align: center;
+}
+
+.item-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 16px;
+}
+
+.item-card {
+  position: relative;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  min-height: 230px;
+  padding: 22px;
+  border: 1px solid rgb(91 70 55 / 12%);
+  border-radius: 20px;
+  background: #fffaf0;
+
+  h3 {
+    margin: 14px 0 20px;
+    color: var(--color-ink);
+    font-size: 1.1rem;
+    line-height: 1.5;
+  }
+}
+
+.item-icon,
+.purchase-icon {
+  display: grid;
+  place-items: center;
+  width: 58px;
+  height: 58px;
+  border-radius: 18px;
+  background: #f0d9c5;
+  color: var(--color-accent-dark);
+}
+
+.item-actions {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  display: flex;
+}
+
+.purchase-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  width: 100%;
+}
+
+app-dialog input {
+  width: 100%;
+}
+
+app-dialog > p {
+  color: var(--color-muted);
+  line-height: 1.7;
+}
+
+.purchase-icon {
+  width: 76px;
+  height: 76px;
+  margin: 0 auto 18px;
+  border-radius: 50%;
+  background: var(--color-accent);
+  color: white;
+  font-size: 2rem;
+}
+
+@media (max-width: 600px) {
+  :host {
+    padding-top: 32px;
+  }
+
+  .item-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .item-card {
+    min-height: 210px;
+  }
+}
