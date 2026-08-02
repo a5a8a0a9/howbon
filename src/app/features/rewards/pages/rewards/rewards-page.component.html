@@ -1,50 +1,35 @@
-<section class="page-card" aria-labelledby="rewards-page-title">
+<section class="rewards-page" aria-labelledby="rewards-page-title">
   <app-page-header
     eyebrow="MY REWARDS"
     title="我的獎賞"
     titleId="rewards-page-title"
-    description="看看目前持有的票券，以及從商店帶回來的獎賞道具。"
+    [meta]="purchases.inventory().length + ' 種道具'"
   />
 
-  <div class="balance-card">
-    <app-ticket-balance [count]="tickets.availableCount()" />
-    <span>繼續集章，收藏下一張票券</span>
-  </div>
-
-  <section class="inventory" aria-labelledby="inventory-title">
-    <div class="inventory-heading">
-      <div>
-        <p>REWARD INVENTORY</p>
-        <h2 id="inventory-title">獎賞道具</h2>
-      </div>
-      <span>{{ purchases.inventory().length }} 種</span>
+  @if (purchases.loading()) {
+    <p class="section-loading" role="status">正在整理你的獎賞道具…</p>
+  } @else if (purchases.inventory().length === 0) {
+    <app-empty-state
+      icon="inventory_2"
+      title="道具背包還是空的"
+      description="帶著票券去商店選一個想要的獎賞吧。"
+    />
+  } @else {
+    <div class="inventory-grid" aria-label="獎賞道具">
+      @for (item of purchases.inventory(); track item.storeItemId) {
+        <article class="inventory-card">
+          <div class="item-icon" aria-hidden="true">
+            <span class="material-symbols-rounded">featured_seasonal_and_gifts</span>
+          </div>
+          <div>
+            <h3>{{ item.name }}</h3>
+            @if (item.latestPurchasedAt) {
+              <time>最近獲得 {{ item.latestPurchasedAt | date: 'yyyy/MM/dd' }}</time>
+            }
+          </div>
+          <strong aria-label="數量 {{ item.quantity }}">× {{ item.quantity }}</strong>
+        </article>
+      }
     </div>
-
-    @if (purchases.loading()) {
-      <p class="section-loading" role="status">正在整理你的獎賞道具…</p>
-    } @else if (purchases.inventory().length === 0) {
-      <app-empty-state
-        icon="inventory_2"
-        title="道具背包還是空的"
-        description="帶著票券去商店選一個想要的獎賞吧。"
-      />
-    } @else {
-      <div class="inventory-grid">
-        @for (item of purchases.inventory(); track item.storeItemId) {
-          <article class="inventory-card">
-            <div class="item-icon" aria-hidden="true">
-              <span class="material-symbols-rounded">featured_seasonal_and_gifts</span>
-            </div>
-            <div>
-              <h3>{{ item.name }}</h3>
-              @if (item.latestPurchasedAt) {
-                <time>最近獲得 {{ item.latestPurchasedAt | date: 'yyyy/MM/dd' }}</time>
-              }
-            </div>
-            <strong aria-label="數量 {{ item.quantity }}">× {{ item.quantity }}</strong>
-          </article>
-        }
-      </div>
-    }
-  </section>
+  }
 </section>

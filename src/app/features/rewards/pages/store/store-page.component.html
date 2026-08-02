@@ -3,97 +3,82 @@
     eyebrow="TICKET STORE"
     title="商店"
     titleId="store-title"
-    description="把想送給自己的獎賞放進商店，得到票券後就能來購買。"
+    [meta]="store.items().length + ' 項商品'"
   />
 
-  <div class="balance-row">
-    <app-ticket-balance [count]="tickets.availableCount()" />
-    <span>票券就像你的獎賞金幣</span>
-  </div>
+  <form class="item-form" (ngSubmit)="createItem()">
+    <label class="sr-only" for="new-item">新增商品</label>
+    <input
+      id="new-item"
+      name="newItem"
+      [(ngModel)]="newItemName"
+      [maxLength]="maxNameLength"
+      [disabled]="!connectivity.online() || busy()"
+      placeholder="例如：看一場期待已久的電影"
+    />
+    <button
+      class="add-button"
+      type="submit"
+      [disabled]="!connectivity.online() || busy() || !newItemName.trim()"
+      aria-label="新增商品"
+    >
+      <span class="material-symbols-rounded" aria-hidden="true">add</span>
+    </button>
+  </form>
 
-  <section class="store-panel" aria-labelledby="items-title">
-    <div class="panel-heading">
-      <div>
-        <p>MY STORE</p>
-        <h2 id="items-title">商品列表</h2>
-      </div>
-      <span>{{ store.items().length }} 項</span>
-    </div>
+  @if (formError() && !editingItem() && !deletingItem() && !purchasingItem()) {
+    <p class="form-error" role="alert">{{ formError() }}</p>
+  }
 
-    <form class="item-form" (ngSubmit)="createItem()">
-      <label class="sr-only" for="new-item">新增商品</label>
-      <input
-        id="new-item"
-        name="newItem"
-        [(ngModel)]="newItemName"
-        [maxLength]="maxNameLength"
-        [disabled]="!connectivity.online() || busy()"
-        placeholder="例如：看一場期待已久的電影"
-      />
-      <button
-        class="add-button"
-        type="submit"
-        [disabled]="!connectivity.online() || busy() || !newItemName.trim()"
-        aria-label="新增商品"
-      >
-        <span class="material-symbols-rounded" aria-hidden="true">add</span>
-      </button>
-    </form>
-
-    @if (formError() && !editingItem() && !deletingItem() && !purchasingItem()) {
-      <p class="form-error" role="alert">{{ formError() }}</p>
-    }
-
-    @if (store.loading()) {
-      <p class="section-loading" role="status">正在整理商店商品…</p>
-    } @else if (store.items().length === 0) {
-      <app-empty-state
-        icon="storefront"
-        title="商店還是空的"
-        description="先新增一個讓自己期待的獎賞吧。"
-      />
-    } @else {
-      <div class="item-grid">
-        @for (item of store.items(); track item.id) {
-          <article class="item-card">
-            <div class="item-icon" aria-hidden="true">
-              <span class="material-symbols-rounded">featured_seasonal_and_gifts</span>
-            </div>
-            <h3>{{ item.name }}</h3>
-            <div class="item-actions">
-              <button
-                class="icon-button"
-                type="button"
-                [disabled]="!connectivity.online()"
-                [attr.aria-label]="'編輯 ' + item.name"
-                (click)="openEdit(item)"
-              >
-                <span class="material-symbols-rounded" aria-hidden="true">edit</span>
-              </button>
-              <button
-                class="icon-button"
-                type="button"
-                [disabled]="!connectivity.online()"
-                [attr.aria-label]="'刪除 ' + item.name"
-                (click)="openDelete(item)"
-              >
-                <span class="material-symbols-rounded" aria-hidden="true">delete</span>
-              </button>
-            </div>
+  @if (store.loading()) {
+    <p class="section-loading" role="status">正在整理商店商品…</p>
+  } @else if (store.items().length === 0) {
+    <app-empty-state
+      icon="storefront"
+      title="商店還是空的"
+      description="先新增一個讓自己期待的獎賞吧。"
+    />
+  } @else {
+    <div class="item-grid" aria-label="商品列表">
+      @for (item of store.items(); track item.id) {
+        <article class="item-card">
+          <div class="item-icon" aria-hidden="true">
+            <span class="material-symbols-rounded">featured_seasonal_and_gifts</span>
+          </div>
+          <h3>{{ item.name }}</h3>
+          <div class="item-actions">
             <button
-              class="primary purchase-button"
+              class="icon-button"
               type="button"
-              [disabled]="!connectivity.online() || tickets.availableCount() === 0"
-              (click)="openPurchase(item)"
+              [disabled]="!connectivity.online()"
+              [attr.aria-label]="'編輯 ' + item.name"
+              (click)="openEdit(item)"
             >
-              <span class="material-symbols-rounded" aria-hidden="true">shopping_bag</span>
-              {{ tickets.availableCount() === 0 ? '票券不足' : '購買' }}
+              <span class="material-symbols-rounded" aria-hidden="true">edit</span>
             </button>
-          </article>
-        }
-      </div>
-    }
-  </section>
+            <button
+              class="icon-button"
+              type="button"
+              [disabled]="!connectivity.online()"
+              [attr.aria-label]="'刪除 ' + item.name"
+              (click)="openDelete(item)"
+            >
+              <span class="material-symbols-rounded" aria-hidden="true">delete</span>
+            </button>
+          </div>
+          <button
+            class="primary purchase-button"
+            type="button"
+            [disabled]="!connectivity.online() || tickets.availableCount() === 0"
+            (click)="openPurchase(item)"
+          >
+            <span class="material-symbols-rounded" aria-hidden="true">shopping_bag</span>
+            {{ tickets.availableCount() === 0 ? '票券不足' : '購買' }}
+          </button>
+        </article>
+      }
+    </div>
+  }
 </section>
 
 @if (editingItem()) {

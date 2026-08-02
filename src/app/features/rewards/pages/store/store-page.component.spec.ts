@@ -42,6 +42,9 @@ describe('StorePageComponent', () => {
     const root = fixture.nativeElement as HTMLElement;
     const itemCard = root.querySelector('.item-card')!;
 
+    expect(root.querySelector('.ticket-balance')).toBeNull();
+    expect(root.querySelector('.description')).toBeNull();
+    expect(root.querySelector('.meta')?.textContent).toContain('1 項商品');
     expect(itemCard.textContent).toContain('看一場電影');
     expect(itemCard.textContent).not.toContain('價格');
     expect(itemCard.textContent).not.toContain('$');

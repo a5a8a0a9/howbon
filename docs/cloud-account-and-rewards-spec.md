@@ -12,10 +12,11 @@
 
 - `/home`：品牌 hero、集章卡、蓋章留言、目前章數與徽章數。
 - `/journal`：以月份為單位瀏覽與編輯蓋章留言。
-- `/rewards`：可用票券數與已購買的道具庫存。
-- `/store`：可用票券數、商品新增、改名、刪除與購買。
+- `/rewards`：已購買的道具庫存。
+- `/store`：商品新增、改名、刪除與購買。
 
 空路徑與未知路徑導向 `/home`；頁面以 Angular Router lazy loading 載入。未登入時保留目前 URL，但只顯示登入畫面。
+登入後的 site header 以只有票券 icon 與數字的 pill 顯示全站可用票券數量。
 
 ## 3. 核心流程
 
@@ -141,7 +142,8 @@
 
 - 專案採 core/shared/features 架構；stamps feature 擁有首頁與日誌，rewards feature 擁有獎賞與商店。
 - 所有 Component 使用同名 `.ts`、`.html`、`.scss`，不使用 inline template/style 或 CSS。
-- 共用 dialog、page header、empty state、ticket balance、loading mask、bottom nav；按鈕、表單、卡片與 icon button 樣式集中於全域 SCSS。
+- 共用 dialog、page header、empty state、loading mask、bottom nav；按鈕、表單、卡片與 icon button 樣式集中於全域 SCSS。
+- 獎賞與商店頁採單層版面，不顯示頁面描述或票券餘額卡；項目數直接顯示於 page header，列表與標題位於同一頁面層級。
 - Bottom nav 固定底部並支援 `safe-area-inset-bottom`；內容保留足夠底部空間。
 - Material Symbols 為裝飾時設 `aria-hidden`；icon-only 按鈕具備 `aria-label`。
 - 保留 focus-visible、reduced-motion、手機優先響應式與 PWA 安裝／更新提示。

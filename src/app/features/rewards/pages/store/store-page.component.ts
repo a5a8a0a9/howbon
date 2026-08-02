@@ -5,20 +5,13 @@ import { MAX_STORE_ITEM_NAME_LENGTH, StoreItem } from '../../../../shared/models
 import { AppDialogComponent } from '../../../../shared/ui/app-dialog/app-dialog.component';
 import { EmptyStateComponent } from '../../../../shared/ui/empty-state/empty-state.component';
 import { PageHeaderComponent } from '../../../../shared/ui/page-header/page-header.component';
-import { TicketBalanceComponent } from '../../../../shared/ui/ticket-balance/ticket-balance.component';
 import { PurchaseService } from '../../data-access/purchase.service';
 import { StoreService } from '../../data-access/store.service';
 import { TicketService } from '../../data-access/ticket.service';
 
 @Component({
   selector: 'app-store-page',
-  imports: [
-    AppDialogComponent,
-    EmptyStateComponent,
-    FormsModule,
-    PageHeaderComponent,
-    TicketBalanceComponent,
-  ],
+  imports: [AppDialogComponent, EmptyStateComponent, FormsModule, PageHeaderComponent],
   templateUrl: './store-page.component.html',
   styleUrl: './store-page.component.scss',
 })
