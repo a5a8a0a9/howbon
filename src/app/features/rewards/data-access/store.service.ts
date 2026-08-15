@@ -1,4 +1,5 @@
 import { Injectable, effect, inject, signal } from '@angular/core';
+import { FirebaseServices } from '@a5a8a0a9/angular-firebase-core';
 import {
   addDoc,
   collection,
@@ -12,7 +13,6 @@ import {
 } from 'firebase/firestore';
 import { AuthService } from '@core/auth/auth.service';
 import { ConnectivityService } from '@core/connectivity/connectivity.service';
-import { getFirebaseServices } from '@core/firebase/firebase-services';
 import { LoadingService } from '@core/loading/loading.service';
 import { MAX_STORE_ITEM_NAME_LENGTH, StoreItem, toDate } from '@shared/models/models';
 
@@ -22,7 +22,7 @@ export function prependStoreItemIfMissing(items: StoreItem[], item: StoreItem): 
 
 @Injectable({ providedIn: 'root' })
 export class StoreService {
-  private readonly services = getFirebaseServices();
+  private readonly services = inject(FirebaseServices, { optional: true })?.instances ?? null;
   private readonly globalLoading = inject(LoadingService);
   private readonly itemState = signal<StoreItem[]>([]);
 

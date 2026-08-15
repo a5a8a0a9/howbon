@@ -1,12 +1,12 @@
-import { Injectable, computed, effect, signal } from '@angular/core';
+import { Injectable, computed, effect, inject, signal } from '@angular/core';
+import { FirebaseServices } from '@a5a8a0a9/angular-firebase-core';
 import { collection, onSnapshot, orderBy, query } from 'firebase/firestore';
 import { AuthService } from '@core/auth/auth.service';
-import { getFirebaseServices } from '@core/firebase/firebase-services';
 import { RewardTicket, toDate } from '@shared/models/models';
 
 @Injectable({ providedIn: 'root' })
 export class TicketService {
-  private readonly services = getFirebaseServices();
+  private readonly services = inject(FirebaseServices, { optional: true })?.instances ?? null;
   private readonly ticketState = signal<RewardTicket[]>([]);
 
   readonly tickets = this.ticketState.asReadonly();

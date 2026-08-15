@@ -1,7 +1,7 @@
 import { Injectable, computed, effect, inject, signal } from '@angular/core';
+import { FirebaseServices } from '@a5a8a0a9/angular-firebase-core';
 import { AuthService } from '@core/auth/auth.service';
 import { ConnectivityService } from '@core/connectivity/connectivity.service';
-import { getFirebaseServices } from '@core/firebase/firebase-services';
 import { LoadingService } from '@core/loading/loading.service';
 import { MAX_STAMP_NOTE_LENGTH, StampRecord, toDate } from '@shared/models/models';
 import {
@@ -43,7 +43,7 @@ function isSameMonth(left: Date, right: Date): boolean {
 
 @Injectable({ providedIn: 'root' })
 export class JournalService {
-  private readonly services = getFirebaseServices();
+  private readonly services = inject(FirebaseServices, { optional: true })?.instances ?? null;
   private readonly globalLoading = inject(LoadingService);
   private readonly selectedMonthState = signal(normalizeMonth(new Date()));
   private readonly entryState = signal<StampRecord[]>([]);
